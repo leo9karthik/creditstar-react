@@ -10,8 +10,6 @@ const AuthContext = React.createContext({
 
 export default AuthContext
 
-
-
 export const AuthContextProvider = (props) => {
     const initialToken = localStorage.getItem('authToken');
     const isPasswordChanged = localStorage.getItem('isPasswordChanged');
