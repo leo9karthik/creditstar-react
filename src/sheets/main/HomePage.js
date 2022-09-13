@@ -93,7 +93,7 @@ const HomePage = () => {
                         <div className="form-box">
                             <div className="auth-hdn-box">
                                 <h2 className="auth-hdn">
-                                    Your mobile number
+                                    Home
                                 </h2>
                             </div>
                             <form onSubmit={handleSubmit(onSubmit)}>
