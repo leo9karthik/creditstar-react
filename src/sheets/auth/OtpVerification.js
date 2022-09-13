@@ -46,7 +46,7 @@ const OtpVerification = () => {
                 console.log(result);
 
                 // navigate("/welcome", { replace: true });
-                navigate("/welcome1", { replace: true });
+                navigate("/welcome-step-1", { replace: true });
             })
             .catch((error) => {
                 console.log(error);
