@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Header from '../../../components/Header';
 import LoanCalComp from '../../../components/LoanCalComp';
 import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
@@ -8,10 +8,16 @@ import 'react-circular-progressbar/dist/styles.css';
 import { useForm } from "react-hook-form";
 import formService from '../../../service/formService';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../../store/auth-context';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const WelcomeStep2 = () => {
+    const authCtx = useContext(AuthContext);
+    var instanceId = authCtx?.instanceId;
+    // console.log(instanceId);
 
     /* steps */
     let steps = 2;
@@ -33,10 +39,41 @@ const WelcomeStep2 = () => {
 
 
     const onSubmit = (data) => {
-        let payload = data;
+        let inputData = data;
+        // console.log(inputData?.postcode);
+
+        let payload = {
+            "action": "submit",
+            "data": {
+                "postcode": inputData?.postcode
+            }
+        }
         console.log(payload);
 
-        navigate("/welcome-step2-1", { replace: true });
+           
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+                console.log(result);
+
+                // navigate("/welcome-step2-1", { replace: true });
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
+            
     }
 
 

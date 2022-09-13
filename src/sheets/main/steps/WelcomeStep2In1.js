@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 const { REACT_APP_PUBLIC_URL } = process.env;
 
-const WelcomeStep2_1 = () => {
+const WelcomeStep2In1 = () => {
 
     /* steps */
     let steps = 2;
@@ -35,7 +35,7 @@ const WelcomeStep2_1 = () => {
         let payload = data;
         console.log(payload);
 
-        navigate("/welcome-step3", { replace: true });
+        navigate("/welcome-step-3", { replace: true });
     }
 
 
@@ -272,4 +272,4 @@ const WelcomeStep2_1 = () => {
     )
 }
 
-export default WelcomeStep2_1
+export default WelcomeStep2In1

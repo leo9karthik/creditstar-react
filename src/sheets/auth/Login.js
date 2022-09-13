@@ -1,16 +1,20 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import formService from '../../service/formService';
 import { useForm } from "react-hook-form";
 import AuthContext from '../../store/auth-context';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const Login = () => {
     const authCtx = useContext(AuthContext);
-    const navigate = useNavigate();
+    var instanceId = authCtx?.instanceId;
+    console.log(instanceId);
 
-    console.log(authCtx);
+    const navigate = useNavigate();
 
     const {
         register,
@@ -23,11 +27,43 @@ const Login = () => {
 
 
     const onSubmit = (data) => {
-        let payload = data;
+        let inputData = data;
+        // console.log(inputData?.mobilenumber);
+
+        let payload = {
+            "action": "submit",
+            "data": {
+                "phoneNumber": inputData?.mobilenumber
+            }
+        }
         console.log(payload);
 
-        navigate("/otp-verification", { replace: true });
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+                console.log(result);
+
+                navigate("/otp-verification", { replace: true });
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
+
+
     }
+
 
     useEffect(() => {
 
@@ -124,8 +160,10 @@ const Login = () => {
                                             type="number"
                                             id="mobilenumber"
                                             name="mobilenumber"
+                                            defaultValue={53720000}
+                                            autoComplete="off"
                                             {...register("mobilenumber", {
-                                                required: "UK Mobile Number is required",
+                                                required: "Mobile Number is required",
                                                 pattern: {
                                                     value: /^[0-9]*$/,
                                                     message: "Enter a valid Mobile Number"

@@ -35,7 +35,7 @@ const WelcomeStep3 = () => {
     let payload = data;
     console.log(payload);
 
-    navigate("/welcome-step4", { replace: true });
+    navigate("/welcome-step-4", { replace: true });
   }
 
 

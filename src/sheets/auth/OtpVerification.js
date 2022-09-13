@@ -3,14 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import formService from '../../service/formService';
 import AuthContext from '../../store/auth-context';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const OtpVerification = () => {
     const authCtx = useContext(AuthContext);
+    var instanceId = authCtx?.instanceId;
+    // console.log(instanceId);
     const navigate = useNavigate();
-
-    console.log(authCtx);
+    // console.log(authCtx);
 
     const {
         register,
@@ -23,10 +26,44 @@ const OtpVerification = () => {
 
 
     const onSubmit = (data) => {
-        let payload = data;
+        let inputData = data;
+        // console.log(inputData?.verificationcode);
+
+        let payload = {
+            "action": "submit",
+            "data": {
+                "phoneCode": inputData?.verificationcode
+            }
+        }
         console.log(payload);
 
-        navigate("/welcome", { replace: true });
+
+
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+                console.log(result);
+
+                // navigate("/welcome", { replace: true });
+                navigate("/welcome1", { replace: true });
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
+
+
     }
 
     useEffect(() => {

@@ -5,8 +5,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContextProvider } from './store/auth-context';
+import Interceptor from './interceptors/Interceptor';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+Interceptor();
 root.render(
   <React.StrictMode>
     <AuthContextProvider>

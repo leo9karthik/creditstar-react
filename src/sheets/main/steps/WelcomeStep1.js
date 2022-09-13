@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 import LoanCalComp from '../../../components/LoanCalComp'
 import MontlyPaymentComp from '../../../components/MontlyPaymentComp'
@@ -8,10 +8,17 @@ import 'react-circular-progressbar/dist/styles.css';
 import { useForm } from "react-hook-form";
 import formService from '../../../service/formService';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import AuthContext from '../../../store/auth-context';
+import { toast } from 'react-toastify';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const WelcomeStep1 = () => {
+    const authCtx = useContext(AuthContext);
+    var instanceId = authCtx?.instanceId;
+    // console.log(instanceId);
+
 
     /* steps */
     let steps = 1;
@@ -19,6 +26,10 @@ const WelcomeStep1 = () => {
     /* steps end */
 
     const navigate = useNavigate();
+
+    const [titleRadio, setTitleRadio] = useState('mr');
+    const [dependentRadio, setDependentRadio] = useState('one');
+
 
     const {
         register,
@@ -30,11 +41,63 @@ const WelcomeStep1 = () => {
     });
 
 
+    /* get radio */
+    const titleRadioFun = (value) => {
+        console.log(value);
+        setTitleRadio(value);
+    }
+
+    const dependentRadioFun = (value) => {
+        console.log(value);
+        setDependentRadio(value);
+    }
+    /* get radio end */
+
+
     const onSubmit = (data) => {
-        let payload = data;
+        let inputData = data;
+        console.log(inputData);
+
+        const dobValue = `${inputData?.yybirth}-${inputData?.mmbirth}-${inputData?.ddbirth}`;
+        console.log(dobValue);
+
+        let payload = {
+            "action": "submit",
+            "data": {
+                "email": inputData?.emailaddress,
+                "title": titleRadio,
+                "firstName": inputData?.firstname,
+                "lastName": inputData?.lastname,
+                "dateOfBirth": dobValue
+            }
+        }
         console.log(payload);
 
-        navigate("/welcome-step2", { replace: true });
+
+        // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+        //     .then((response) => {
+        //         const result = response?.data;
+        //         authCtx.currentStepFunc(result?.currentStepId);
+        //         console.log(result);
+
+        //         // navigate("/welcome-step-2", { replace: true });
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+
+        //         toast.error('Something went wrong!', {
+        //             position: "top-right",
+        //             autoClose: 4000,
+        //             hideProgressBar: false,
+        //             closeOnClick: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             progress: undefined,
+        //         });
+
+        //     });
+
+
     }
 
 
@@ -45,7 +108,7 @@ const WelcomeStep1 = () => {
         /* form service end */
     }, [])
 
-    
+
 
     return (
         <div>
@@ -151,10 +214,10 @@ const WelcomeStep1 = () => {
                                                 <input
                                                     type="radio"
                                                     id="mr"
-                                                    name="title[]"
-                                                // {...register("mr", {
-                                                //     required: true,
-                                                // })}
+                                                    name="titleradio"
+                                                    value="mr"
+                                                    defaultChecked={titleRadio === 'mr'}
+                                                    onClick={(e) => titleRadioFun(e.target.value)}
                                                 />
                                                 <label className="chk-label" htmlFor="mr">
                                                     <span> Mr </span>
@@ -166,10 +229,10 @@ const WelcomeStep1 = () => {
                                                 <input
                                                     type="radio"
                                                     id="ms"
-                                                    name="title[]"
-                                                // {...register("ms", {
-                                                //     required: true,
-                                                // })}
+                                                    name="titleradio"
+                                                    value="ms"
+                                                    defaultChecked={titleRadio === 'ms'}
+                                                    onClick={(e) => titleRadioFun(e.target.value)}
                                                 />
                                                 <label className="chk-label" htmlFor="ms">
                                                     <span> Ms </span>
@@ -181,10 +244,10 @@ const WelcomeStep1 = () => {
                                                 <input
                                                     type="radio"
                                                     id="miss"
-                                                    name="title[]"
-                                                // {...register("miss", {
-                                                //     required: true,
-                                                // })}
+                                                    name="titleradio"
+                                                    value="miss"
+                                                    defaultChecked={titleRadio === 'miss'}
+                                                    onClick={(e) => titleRadioFun(e.target.value)}
                                                 />
                                                 <label className="chk-label" htmlFor="miss">
                                                     <span> Miss </span>
@@ -196,10 +259,10 @@ const WelcomeStep1 = () => {
                                                 <input
                                                     type="radio"
                                                     id="mrs"
-                                                    name="title[]"
-                                                // {...register("mrs", {
-                                                //     required: true,
-                                                // })}
+                                                    name="titleradio"
+                                                    value="mrs"
+                                                    defaultChecked={titleRadio === 'mrs'}
+                                                    onClick={(e) => titleRadioFun(e.target.value)}
                                                 />
                                                 <label className="chk-label" htmlFor="mrs">
                                                     <span> Mrs </span>
@@ -207,12 +270,12 @@ const WelcomeStep1 = () => {
                                             </div>
                                             {/* end */}
                                         </div>
-                                        {/* {(errors.mrs) &&
+                                        {errors.titleradio?.type === 'required' &&
                                             <div className="form-input-error">
                                                 <i className="icon-input-error"></i>
                                                 <p>Title is required</p>
                                             </div>
-                                        } */}
+                                        }
                                     </div>
                                     {/* end */}
 
@@ -356,7 +419,9 @@ const WelcomeStep1 = () => {
                                                     type="radio"
                                                     id="one"
                                                     name="dependents"
-                                                    {...register("one")}
+                                                    value="one"
+                                                    defaultChecked={dependentRadio === 'one'}
+                                                    onClick={(e) => dependentRadioFun(e.target.value)}
                                                 />
                                                 <label className="chk-label" htmlFor="one">
                                                     <span> 1 </span>
@@ -369,7 +434,9 @@ const WelcomeStep1 = () => {
                                                     type="radio"
                                                     id="two"
                                                     name="dependents"
-                                                    {...register("two")}
+                                                    value="two"
+                                                    defaultChecked={dependentRadio === 'two'}
+                                                    onClick={(e) => dependentRadioFun(e.target.value)}
                                                 />
                                                 <label className="chk-label" htmlFor="two">
                                                     <span> 2 </span>
@@ -382,7 +449,9 @@ const WelcomeStep1 = () => {
                                                     type="radio"
                                                     id="three"
                                                     name="dependents"
-                                                    {...register("three")}
+                                                    value="three"
+                                                    defaultChecked={dependentRadio === 'three'}
+                                                    onClick={(e) => dependentRadioFun(e.target.value)}
                                                 />
                                                 <label className="chk-label" htmlFor="three">
                                                     <span> 3 </span>
@@ -395,7 +464,9 @@ const WelcomeStep1 = () => {
                                                     type="radio"
                                                     id="four"
                                                     name="dependents"
-                                                    {...register("four")}
+                                                    value="four"
+                                                    defaultChecked={dependentRadio === 'four'}
+                                                    onClick={(e) => dependentRadioFun(e.target.value)}
                                                 />
                                                 <label className="chk-label" htmlFor="four">
                                                     <span> 4+ </span>

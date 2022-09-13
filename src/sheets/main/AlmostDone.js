@@ -14,11 +14,11 @@ const AlmostDone = () => {
     useEffect(() => {
 
 
-        setTimeout(() => {
-            console.log("123");
+        // setTimeout(() => {
+        //     console.log("123");
 
-            navigate("/congratulations", { replace: true });
-        }, 3000);
+        //     navigate("/congratulations", { replace: true });
+        // }, 3000);
 
 
     }, [])
@@ -29,13 +29,13 @@ const AlmostDone = () => {
         <div>
 
             {/* Header Starts */}
-            <Header />
+            <Header headerOne={true} />
             {/* Header Ends */}
 
 
             {/* Main Container Starts */}
             <div className="main-container">
-                <div className="banner-top-img inner-bg-img" style={{ backgroundImage: `url('${REACT_APP_PUBLIC_URL}/img/inner-bg-img.jpg')` }}>
+                <div className="banner-top-img inner-bg-img add-bg-mob" style={{ backgroundImage: `url('${REACT_APP_PUBLIC_URL}/img/inner-bg-img.jpg')` }}>
                 </div>
                 <div className="container">
                     {/* start */}
@@ -62,7 +62,6 @@ const AlmostDone = () => {
                                 <p>We are processing your application.<br /> This won’t take a second</p>
                             </div>
                         </div>
-
 
                     </div>
                     {/* end */}

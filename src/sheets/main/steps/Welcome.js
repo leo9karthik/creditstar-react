@@ -24,7 +24,7 @@ const Welcome = () => {
         let payload = data;
         console.log(payload);
 
-        navigate("/welcome-step1", { replace: true });
+        navigate("/welcome-step-1", { replace: true });
     }
 
 
