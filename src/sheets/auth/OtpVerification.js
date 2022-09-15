@@ -25,6 +25,77 @@ const OtpVerification = () => {
     });
 
 
+    /* change number function */
+    const changeNumber = () => {
+        console.log("Change Number");
+
+        let payload = {
+            "action": "back"
+        }
+        console.log(payload);
+
+
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+
+                // redirect to login
+                navigate("/login", { replace: true });
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
+
+    }
+    /* change number function end */
+
+    /* Resend OTP function */
+    const resendOtp = () => {
+        console.log("Resend OTP");
+
+        let payload = {
+            "action": "resend"
+        }
+        console.log(payload);
+
+
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
+
+    }
+    /* Resend OTP function end */
+
+    /* Post Data */
     const onSubmit = (data) => {
         let inputData = data;
         // console.log(inputData?.verificationcode);
@@ -45,6 +116,19 @@ const OtpVerification = () => {
                 authCtx.currentStepFunc(result?.currentStepId);
                 console.log(result);
 
+
+                toast.success('OTP verified successfully.', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+
+                // redirect to Welcome
                 // navigate("/welcome", { replace: true });
                 navigate("/welcome-step-1", { replace: true });
             })
@@ -65,6 +149,7 @@ const OtpVerification = () => {
 
 
     }
+    /* Post Data end */
 
     useEffect(() => {
 
@@ -150,7 +235,7 @@ const OtpVerification = () => {
                                 </h2>
                                 <div className="auth-para">
                                     <p>We have sent a code to
-                                        <i><span>07554446921</span>. <a href="#"> Change</a></i>
+                                        <i><span>07554446921</span>. <a href="#" onClick={() => changeNumber()}> Change</a></i>
                                     </p>
                                 </div>
                             </div>
@@ -180,7 +265,7 @@ const OtpVerification = () => {
                                     }
                                 </div>
                                 <div className="auth-para ap-txt-cen mob-rm-resend">
-                                    <p>Didn’t get the a code? <a href="#" className="comm-link">Click to resend</a></p>
+                                    <p>Didn’t get the a code? <a href="#" className="comm-link" onClick={() => resendOtp()}>Click to resend</a></p>
                                 </div>
                                 {/* <div class="auth-btn"> */}
                                 <button className="button button--block" type="submit"><span>Submit</span></button>

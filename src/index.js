@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContextProvider } from './store/auth-context';
 import Interceptor from './interceptors/Interceptor';
+import Loader from './components/Loader';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 Interceptor();
@@ -13,6 +14,7 @@ root.render(
   <React.StrictMode>
     <AuthContextProvider>
       <BrowserRouter>
+        <Loader />
         <App />
       </BrowserRouter>
     </AuthContextProvider>

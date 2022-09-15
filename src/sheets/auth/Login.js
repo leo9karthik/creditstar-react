@@ -6,6 +6,7 @@ import AuthContext from '../../store/auth-context';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import gs from '../../service/global';
 
 const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
@@ -38,12 +39,31 @@ const Login = () => {
         }
         console.log(payload);
 
+        /* Loader Starts */
+        gs.showLoader(true);
+        /* Loader Ends */
+        
         axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
             .then((response) => {
                 const result = response?.data;
                 authCtx.currentStepFunc(result?.currentStepId);
                 console.log(result);
 
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                toast.success('OTP send to your registered number.', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                /* Loader Ends */
+
+                // redirect to OTP Verification
                 navigate("/otp-verification", { replace: true });
             })
             .catch((error) => {

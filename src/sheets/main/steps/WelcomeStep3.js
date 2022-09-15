@@ -1,20 +1,23 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 import LoanCalComp from '../../../components/LoanCalComp'
-import MontlyPaymentComp from '../../../components/MontlyPaymentComp'
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useForm } from "react-hook-form";
 import formService from '../../../service/formService';
 import { useNavigate } from 'react-router-dom';
+import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
 
 const { REACT_APP_PUBLIC_URL } = process.env;
 
 const WelcomeStep3 = () => {
 
   /* steps */
-  let steps = 3;
+    const [steps, setSteps] = useState(2);
+    setTimeout(() => {
+        setSteps(3)
+    }, 1000);
   let percentage = (steps / 4) * 100;
   /* steps end */
 
@@ -64,10 +67,6 @@ const WelcomeStep3 = () => {
 
               {/* start */}
               <MontlyPaymentComp />
-              {/* end */}
-
-              {/* start */}
-              <LoanCalComp />
               {/* end */}
 
             </div>

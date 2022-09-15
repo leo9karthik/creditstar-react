@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 import LoanCalComp from '../../../components/LoanCalComp'
-import MontlyPaymentComp from '../../../components/MontlyPaymentComp'
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -11,6 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../../../store/auth-context';
 import { toast } from 'react-toastify';
+import gs from '../../../service/global';
+import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
 
 const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
@@ -21,7 +22,10 @@ const WelcomeStep1 = () => {
 
 
     /* steps */
-    let steps = 1;
+    const [steps, setSteps] = useState(0);
+    setTimeout(() => {
+        setSteps(1)
+    }, 1000);
     let percentage = (steps / 4) * 100;
     /* steps end */
 
@@ -74,29 +78,39 @@ const WelcomeStep1 = () => {
         console.log(payload);
 
 
-        // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
-        //     .then((response) => {
-        //         const result = response?.data;
-        //         authCtx.currentStepFunc(result?.currentStepId);
-        //         console.log(result);
+        /* Loader Starts */
+        gs.showLoader(true);
+        /* Loader Ends */
 
-        //         // navigate("/welcome-step-2", { replace: true });
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+                console.log(result);
 
-        //         toast.error('Something went wrong!', {
-        //             position: "top-right",
-        //             autoClose: 4000,
-        //             hideProgressBar: false,
-        //             closeOnClick: true,
-        //             pauseOnHover: true,
-        //             draggable: true,
-        //             progress: undefined,
-        //         });
 
-        //     });
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
 
+
+                // redirect to Address History 
+                navigate("/welcome-step-2", { replace: true });
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
 
     }
 
@@ -128,10 +142,6 @@ const WelcomeStep1 = () => {
 
                             {/* start */}
                             <MontlyPaymentComp />
-                            {/* end */}
-
-                            {/* start */}
-                            <LoanCalComp />
                             {/* end */}
 
                         </div>
@@ -213,8 +223,8 @@ const WelcomeStep1 = () => {
                                             <div className="checkbox-box check-three">
                                                 <input
                                                     type="radio"
-                                                    id="mr"
                                                     name="titleradio"
+                                                    id="mr"
                                                     value="mr"
                                                     defaultChecked={titleRadio === 'mr'}
                                                     onClick={(e) => titleRadioFun(e.target.value)}
@@ -417,8 +427,8 @@ const WelcomeStep1 = () => {
                                             <div className="checkbox-box check-three">
                                                 <input
                                                     type="radio"
-                                                    id="one"
                                                     name="dependents"
+                                                    id="one"
                                                     value="one"
                                                     defaultChecked={dependentRadio === 'one'}
                                                     onClick={(e) => dependentRadioFun(e.target.value)}
@@ -432,8 +442,8 @@ const WelcomeStep1 = () => {
                                             <div className="checkbox-box check-three">
                                                 <input
                                                     type="radio"
-                                                    id="two"
                                                     name="dependents"
+                                                    id="two"
                                                     value="two"
                                                     defaultChecked={dependentRadio === 'two'}
                                                     onClick={(e) => dependentRadioFun(e.target.value)}
@@ -447,8 +457,8 @@ const WelcomeStep1 = () => {
                                             <div className="checkbox-box check-three">
                                                 <input
                                                     type="radio"
-                                                    id="three"
                                                     name="dependents"
+                                                    id="three"
                                                     value="three"
                                                     defaultChecked={dependentRadio === 'three'}
                                                     onClick={(e) => dependentRadioFun(e.target.value)}
@@ -462,8 +472,8 @@ const WelcomeStep1 = () => {
                                             <div className="checkbox-box check-three">
                                                 <input
                                                     type="radio"
-                                                    id="four"
                                                     name="dependents"
+                                                    id="four"
                                                     value="four"
                                                     defaultChecked={dependentRadio === 'four'}
                                                     onClick={(e) => dependentRadioFun(e.target.value)}

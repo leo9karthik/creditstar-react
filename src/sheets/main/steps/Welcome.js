@@ -2,8 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import Header from '../../../components/Header'
-import LoanCalComp from '../../../components/LoanCalComp'
-import MontlyPaymentComp from '../../../components/MontlyPaymentComp'
+import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
 
 const { REACT_APP_PUBLIC_URL } = process.env;
 
@@ -23,7 +22,8 @@ const Welcome = () => {
     const onSubmit = (data) => {
         let payload = data;
         console.log(payload);
-
+ 
+        // redirect to Basic Info
         navigate("/welcome-step-1", { replace: true });
     }
 
@@ -48,10 +48,6 @@ const Welcome = () => {
 
                             {/* start */}
                             <MontlyPaymentComp />
-                            {/* end */}
-
-                            {/* start */}
-                            <LoanCalComp />
                             {/* end */}
 
                         </div>

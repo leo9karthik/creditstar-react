@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Slider from 'react-rangeslider'
 import 'react-rangeslider/lib/index.css'
+import { toast } from 'react-toastify';
+import AuthContext from '../store/auth-context';
+
+const { REACT_APP_FLOWID } = process.env;
+
+const LoanCalComp = ({ getAmount, getDuration }) => {
+    const authCtx = useContext(AuthContext);
+    var instanceId = authCtx?.instanceId;
+    // console.log(instanceId);
 
 
+    const intialAmount = localStorage.getItem('amount');
+    const intialPeriod = localStorage.getItem('period');
+    let numIntialAmount = Number.parseInt(intialAmount);
+    let numIntialPeriod = Number.parseInt(intialPeriod);
+    // console.log(numIntialAmount, numIntialPeriod);
 
-const LoanCalComp = () => {
 
     const {
         register,
@@ -15,6 +29,12 @@ const LoanCalComp = () => {
         mode: "all",
         // mode: "onBlur",
     });
+
+
+
+    /* calculate months */
+
+    /* calculate months end */
 
 
     /* loan calculator add remove class */
@@ -36,9 +56,8 @@ const LoanCalComp = () => {
 
 
     /* range slider */
-    const [amtSlideValue, setAmtSlideValue] = useState(1000);
-    const [periodSlideValue, setPeriodSlideValue] = useState(12);
-
+    const [amtSlideValue, setAmtSlideValue] = useState(numIntialAmount);
+    const [periodSlideValue, setPeriodSlideValue] = useState(numIntialPeriod);
 
     const handleChangeLoan = (value) => {
         // console.log(value);
@@ -51,14 +70,69 @@ const LoanCalComp = () => {
     }
 
 
-
+    /* send calculated value */
     const handleChangeCompleteLoan = () => {
-        console.log('Change event completed Loan');
+        console.log('Change event completed Loan', amtSlideValue);
+        getAmount(amtSlideValue);
+        localStorage.setItem('amount', amtSlideValue)
+
+        let payload = {
+            "action": "submit",
+            "data": {
+                "amount": amtSlideValue,
+                "duration": periodSlideValue
+            }
+        }
+        // console.log(payload);
+        getPayload(payload);
     };
 
     const handleChangeCompletePeriod = () => {
-        console.log('Change event completed Period');
+        console.log('Change event completed Period', periodSlideValue);
+        getDuration(periodSlideValue);
+        localStorage.setItem('period', periodSlideValue)
+
+
+        let payload = {
+            "action": "submit",
+            "data": {
+                "amount": amtSlideValue,
+                "duration": periodSlideValue
+            }
+        }
+        // console.log(payload);
+        getPayload(payload);
     };
+
+    function getPayload(payload) {
+        console.log(payload);
+
+        // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+        //     .then((response) => {
+        //         const result = response?.data;
+        //         // authCtx.currentStepFunc(result?.currentStepId);
+        //         console.log(result);
+
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+
+        //         toast.error('Something went wrong!', {
+        //             position: "top-right",
+        //             autoClose: 4000,
+        //             hideProgressBar: false,
+        //             closeOnClick: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             progress: undefined,
+        //         });
+
+        //     });
+    }
+
+    /* send calculated value */
+
+
 
 
 
@@ -82,8 +156,6 @@ const LoanCalComp = () => {
         console.log(data);
     }
     /* submit data end */
-
-
 
     return (
         <div className="comm-box wel-loan">
@@ -249,6 +321,7 @@ const LoanCalComp = () => {
             </div>
 
         </div>
+
     )
 }
 
