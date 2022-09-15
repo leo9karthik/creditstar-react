@@ -52,6 +52,11 @@ const HomePage = () => {
                 authCtx.createInstanceFunc(result?.id);
                 authCtx.currentStepFunc(result?.currentStepId);
 
+
+
+                localStorage.setItem('amount', +numAmout)
+                localStorage.setItem('period', +numDuration)
+
                 // console.log('cookies', cookies.getAll());
                 // console.log('cookies PHPSESSID', cookies.get('PHPSESSID'));
                 // console.log("headers", response.headers);
@@ -134,7 +139,7 @@ const HomePage = () => {
                                             type="number"
                                             id="duration"
                                             name="duration"
-                                            defaultValue={360}
+                                            defaultValue={12}
                                             autoComplete="off"
                                             {...register("duration", {
                                                 required: "Duration is required",
