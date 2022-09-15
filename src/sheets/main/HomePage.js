@@ -140,6 +140,7 @@ const HomePage = () => {
                                             id="duration"
                                             name="duration"
                                             defaultValue={12}
+                                            
                                             autoComplete="off"
                                             {...register("duration", {
                                                 required: "Duration is required",
