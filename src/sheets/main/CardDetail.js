@@ -1,15 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header'
 import { useForm } from "react-hook-form";
 import formService from '../../service/formService';
+import AuthContext from '../../store/auth-context';
+import axios from 'axios';
+import gs from '../../service/global';
+import { toast } from 'react-toastify';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const CardDetail = () => {
+    const authCtx = useContext(AuthContext);
+    var instanceId = authCtx?.instanceId;
 
     const navigate = useNavigate();
 
+    /* react-form-hook */
     const {
         register,
         handleSubmit,
@@ -18,14 +25,63 @@ const CardDetail = () => {
         // mode: "onBlur",
         mode: "all",
     });
+    /* react-form-hook end */
 
 
+    /* Post data */
     const onSubmit = (data) => {
-        let payload = data;
-        console.log(payload);
+        let inputData = data;
+        console.log(inputData);
 
-        navigate("/finalize-loan-detail", { replace: true });
+        let payload = {
+            "action": "submit",
+            "data": {
+                "cardName": "John Doe",
+                "cardNumber": "4012888888881881",
+                "cardExpiry": "06/23",
+                "cardCVV": "666",
+                "preContractConsent": true,
+                "agreementConsent": true
+            }
+        }
+        // console.log(payload);
+
+
+        /* Loader Starts */
+        gs.showLoader(true);
+        /* Loader Ends */
+
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                AuthContext.currentStepFunc(result?.currentStepId);
+                console.log(result);
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
+                // redirect to finalize
+                navigate("/finalize-loan-detail", { replace: true });
+
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
+
     }
+    /* Post data end */
 
 
 

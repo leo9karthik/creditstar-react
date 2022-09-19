@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Header from '../../../components/Header';
-import LoanCalComp from '../../../components/LoanCalComp';
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -11,6 +10,7 @@ import AuthContext from '../../../store/auth-context';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
+import gs from '../../../service/global';
 
 const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
@@ -28,11 +28,10 @@ const WelcomeStep2 = () => {
     let percentage = (steps / 4) * 100;
     /* steps end */
 
-
     /* usestate */
     const [residentialRadio, setResidentialRadio] = useState('homeOwner');
+    const [showAddress, setShowAddress] = useState(false);
     /* usestate end */
-
 
     const navigate = useNavigate();
 
@@ -69,28 +68,39 @@ const WelcomeStep2 = () => {
         }
         console.log(payload);
 
+        /* Loader Starts */
+        gs.showLoader(true);
+        /* Loader Ends */
 
-        // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
-        //     .then((response) => {
-        //         const result = response?.data;
-        //         authCtx.currentStepFunc(result?.currentStepId);
-        //         console.log(result);
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+                console.log(result);
 
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
 
-        //         toast.error('Something went wrong!', {
-        //             position: "top-right",
-        //             autoClose: 4000,
-        //             hideProgressBar: false,
-        //             closeOnClick: true,
-        //             pauseOnHover: true,
-        //             draggable: true,
-        //             progress: undefined,
-        //         });
+                setShowAddress(true);
 
-        //     });
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
 
     }
 
@@ -107,30 +117,38 @@ const WelcomeStep2 = () => {
         }
         console.log(payload);
 
+        /* Loader Starts */
+        gs.showLoader(true);
+        /* Loader Ends */
 
-        // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
-        //     .then((response) => {
-        //         const result = response?.data;
-        //         authCtx.currentStepFunc(result?.currentStepId);
-        //         console.log(result);
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+                console.log(result);
 
-        //         // // redirect to Address Lookup 
-        //         // navigate("/welcome-step2-1", { replace: true });
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
 
-        //         toast.error('Something went wrong!', {
-        //             position: "top-right",
-        //             autoClose: 4000,
-        //             hideProgressBar: false,
-        //             closeOnClick: true,
-        //             pauseOnHover: true,
-        //             draggable: true,
-        //             progress: undefined,
-        //         });
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
 
-        //     });
+                // // redirect to Address Lookup 
+                navigate("/current-address", { replace: true });
+            })
+            .catch((error) => {
+                console.log(error);
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
 
     }
     /* Post data end */
@@ -212,7 +230,7 @@ const WelcomeStep2 = () => {
 
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     {/* start */}
-                                    <div className="form-grp-box">
+                                    <div className={`form-grp-box ${!showAddress ? 'mb0' : ''}`}>
                                         {/* <div class="form-quest-box">
                                             <h6 class="form-quest">What’s your current address?</h6>
                                             <div class="form-para rm-for-mob">
@@ -248,175 +266,177 @@ const WelcomeStep2 = () => {
                                     {/* end */}
                                 </form>
 
-                                <form onSubmit={handleSubmit2(onSubmitAddress)}>
-                                    {/* start */}
-                                    <div className="form-grp-box">
-                                        <p className="form-quest">Select your address</p>
-                                        <div className="form-grp-field mb0">
-                                            <div className="form-grp">
-                                                <select className="select-field form-field"
-                                                    id="address-fld"
-                                                    name="address"
-                                                    {...register2("address", {
-                                                        required: "Address is required",
-                                                    })}
-                                                >
-                                                    <option />
-                                                    <option value="address1">32 Waltham Road, Bournemouth... 1</option>
-                                                    <option value="address2">32 Waltham Road, Bournemouth... 2</option>
-                                                    <option value="address3">32 Waltham Road, Bournemouth... 3</option>
-                                                    <option value="address4">32 Waltham Road, Bournemouth... 4</option>
-                                                    <option value="address5">32 Waltham Road, Bournemouth... 5</option>
-                                                </select>
-                                                <p className="form-label">Select Address</p>
-                                            </div>
-                                            {errors2.year &&
-                                                <div className="form-input-error">
-                                                    <i className="icon-input-error"></i>
-                                                    <p>{errors2.address.message}</p>
+                                <div className={!showAddress ? 'dnone' : ''}>
+                                    <form onSubmit={handleSubmit2(onSubmitAddress)}>
+                                        {/* start */}
+                                        <div className="form-grp-box">
+                                            <p className="form-quest">Select your address</p>
+                                            <div className="form-grp-field mb0">
+                                                <div className="form-grp">
+                                                    <select className="select-field form-field"
+                                                        id="address-fld"
+                                                        name="address"
+                                                        {...register2("address", {
+                                                            required: "Address is required",
+                                                        })}
+                                                    >
+                                                        <option />
+                                                        <option value="address1">32 Waltham Road, Bournemouth... 1</option>
+                                                        <option value="address2">32 Waltham Road, Bournemouth... 2</option>
+                                                        <option value="address3">32 Waltham Road, Bournemouth... 3</option>
+                                                        <option value="address4">32 Waltham Road, Bournemouth... 4</option>
+                                                        <option value="address5">32 Waltham Road, Bournemouth... 5</option>
+                                                    </select>
+                                                    <p className="form-label">Select Address</p>
                                                 </div>
-                                            }
-                                        </div>
-                                    </div>
-                                    {/* end */}
-                                    {/* start */}
-                                    <div className="form-grp-box">
-                                        <p className="form-quest">When did you move in?</p>
-                                        <div className="f-row f-2 custm-frow">
-                                            <div className="f-col">
-                                                {/* start */}
-                                                <div className="form-grp-field">
-                                                    <div className="form-grp">
-                                                        <select
-                                                            className="select-field form-field"
-                                                            id="month-fld"
-                                                            name="month"
-                                                            {...register2("month", {
-                                                                required: "Month is required",
-                                                            })}
-                                                        >
-                                                            <option></option>
-                                                            <option value="month1">Option 1</option>
-                                                            <option value="month2">Option 2</option>
-                                                            <option value="month3">Option 3</option>
-                                                            <option value="month4">Option 4</option>
-                                                            <option value="month5">Option 5</option>
-                                                        </select>
-                                                        <p className="form-label">Month</p>
+                                                {errors2.address &&
+                                                    <div className="form-input-error">
+                                                        <i className="icon-input-error"></i>
+                                                        <p>{errors2.address.message}</p>
                                                     </div>
-                                                    {errors2.month &&
-                                                        <div className="form-input-error">
-                                                            <i className="icon-input-error"></i>
-                                                            <p>{errors2.month.message}</p>
-                                                        </div>
-                                                    }
-                                                </div>
-                                                {/* end */}
+                                                }
                                             </div>
-                                            <div className="f-col">
-                                                {/* start */}
-                                                <div className="form-grp-field">
-                                                    <div className="form-grp">
-                                                        <select
-                                                            className="select-field form-field"
-                                                            id="year-fld"
-                                                            name="year"
-                                                            {...register2("year", {
-                                                                required: "Year is required",
-                                                            })}
+                                        </div>
+                                        {/* end */}
+                                        {/* start */}
+                                        <div className="form-grp-box">
+                                            <p className="form-quest">When did you move in?</p>
+                                            <div className="f-row f-2 custm-frow">
+                                                <div className="f-col">
+                                                    {/* start */}
+                                                    <div className="form-grp-field">
+                                                        <div className="form-grp">
+                                                            <select
+                                                                className="select-field form-field"
+                                                                id="month-fld"
+                                                                name="month"
+                                                                {...register2("month", {
+                                                                    required: "Month is required",
+                                                                })}
+                                                            >
+                                                                <option></option>
+                                                                <option value="month1">Option 1</option>
+                                                                <option value="month2">Option 2</option>
+                                                                <option value="month3">Option 3</option>
+                                                                <option value="month4">Option 4</option>
+                                                                <option value="month5">Option 5</option>
+                                                            </select>
+                                                            <p className="form-label">Month</p>
+                                                        </div>
+                                                        {errors2.month &&
+                                                            <div className="form-input-error">
+                                                                <i className="icon-input-error"></i>
+                                                                <p>{errors2.month.message}</p>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    {/* end */}
+                                                </div>
+                                                <div className="f-col">
+                                                    {/* start */}
+                                                    <div className="form-grp-field">
+                                                        <div className="form-grp">
+                                                            <select
+                                                                className="select-field form-field"
+                                                                id="year-fld"
+                                                                name="year"
+                                                                {...register2("year", {
+                                                                    required: "Year is required",
+                                                                })}
 
-                                                        >
-                                                            <option />
-                                                            <option value="year1">Option 1</option>
-                                                            <option value="year2">Option 2</option>
-                                                            <option value="year3">Option 3</option>
-                                                            <option value="year4">Option 4</option>
-                                                            <option value="year5">Option 5</option>
-                                                        </select>
-                                                        <p className="form-label">Year</p>
-                                                    </div>
-                                                    {errors2.year &&
-                                                        <div className="form-input-error">
-                                                            <i className="icon-input-error"></i>
-                                                            <p>{errors2.year.message}</p>
+                                                            >
+                                                                <option />
+                                                                <option value="year1">Option 1</option>
+                                                                <option value="year2">Option 2</option>
+                                                                <option value="year3">Option 3</option>
+                                                                <option value="year4">Option 4</option>
+                                                                <option value="year5">Option 5</option>
+                                                            </select>
+                                                            <p className="form-label">Year</p>
                                                         </div>
-                                                    }
+                                                        {errors2.year &&
+                                                            <div className="form-input-error">
+                                                                <i className="icon-input-error"></i>
+                                                                <p>{errors2.year.message}</p>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    {/* end */}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/* end */}
+                                        {/* start */}
+                                        <div className="form-grp-box">
+                                            <p className="form-quest">What’s your residential status?</p>
+                                            <div className="mob-full-chk">
+                                                {/* start */}
+                                                <div className="checkbox-box check-three">
+                                                    <input
+                                                        type="radio"
+                                                        name="residstatus"
+                                                        id="homeOwner"
+                                                        value="homeOwner"
+                                                        defaultChecked={residentialRadio === 'homeOwner'}
+                                                        onClick={(e) => residentialRadioFun(e.target.value)}
+                                                    />
+                                                    <label className="chk-label" htmlFor="homeOwner">
+                                                        <span> Home owner </span>
+                                                    </label>
+                                                </div>
+                                                {/* end */}
+                                                {/* start */}
+                                                <div className="checkbox-box check-three">
+                                                    <input
+                                                        type="radio"
+                                                        name="residstatus"
+                                                        id="privateTenant"
+                                                        value="privateTenant"
+                                                        defaultChecked={residentialRadio === 'privateTenant'}
+                                                        onClick={(e) => residentialRadioFun(e.target.value)}
+                                                    />
+                                                    <label className="chk-label" htmlFor="privateTenant">
+                                                        <span> Private tenant </span>
+                                                    </label>
+                                                </div>
+                                                {/* end */}
+                                                {/* start */}
+                                                <div className="checkbox-box check-three">
+                                                    <input
+                                                        type="radio"
+                                                        name="residstatus"
+                                                        id="livingWithParent"
+                                                        value="livingWithParent"
+                                                        defaultChecked={residentialRadio === 'livingWithParent'}
+                                                        onClick={(e) => residentialRadioFun(e.target.value)}
+                                                    />
+                                                    <label className="chk-label" htmlFor="livingWithParent">
+                                                        <span> Living with parents </span>
+                                                    </label>
+                                                </div>
+                                                {/* end */}
+                                                {/* start */}
+                                                <div className="checkbox-box check-three">
+                                                    <input
+                                                        type="radio"
+                                                        name="residstatus"
+                                                        id="councilTenant"
+                                                        value="councilTenant"
+                                                        defaultChecked={residentialRadio === 'councilTenant'}
+                                                        onClick={(e) => residentialRadioFun(e.target.value)}
+                                                    />
+                                                    <label className="chk-label" htmlFor="councilTenant">
+                                                        <span> Council tenant </span>
+                                                    </label>
                                                 </div>
                                                 {/* end */}
                                             </div>
                                         </div>
-                                    </div>
-                                    {/* end */}
-                                    {/* start */}
-                                    <div className="form-grp-box">
-                                        <p className="form-quest">What’s your residential status?</p>
-                                        <div className="mob-full-chk">
-                                            {/* start */}
-                                            <div className="checkbox-box check-three">
-                                                <input
-                                                    type="radio"
-                                                    name="residstatus"
-                                                    id="homeOwner"
-                                                    value="homeOwner"
-                                                    defaultChecked={residentialRadio === 'homeOwner'}
-                                                    onClick={(e) => residentialRadioFun(e.target.value)}
-                                                />
-                                                <label className="chk-label" htmlFor="homeOwner">
-                                                    <span> Home owner </span>
-                                                </label>
-                                            </div>
-                                            {/* end */}
-                                            {/* start */}
-                                            <div className="checkbox-box check-three">
-                                                <input
-                                                    type="radio"
-                                                    name="residstatus"
-                                                    id="privateTenant"
-                                                    value="privateTenant"
-                                                    defaultChecked={residentialRadio === 'privateTenant'}
-                                                    onClick={(e) => residentialRadioFun(e.target.value)}
-                                                />
-                                                <label className="chk-label" htmlFor="privateTenant">
-                                                    <span> Private tenant </span>
-                                                </label>
-                                            </div>
-                                            {/* end */}
-                                            {/* start */}
-                                            <div className="checkbox-box check-three">
-                                                <input
-                                                    type="radio"
-                                                    name="residstatus"
-                                                    id="livingWithParent"
-                                                    value="livingWithParent"
-                                                    defaultChecked={residentialRadio === 'livingWithParent'}
-                                                    onClick={(e) => residentialRadioFun(e.target.value)}
-                                                />
-                                                <label className="chk-label" htmlFor="livingWithParent">
-                                                    <span> Living with parents </span>
-                                                </label>
-                                            </div>
-                                            {/* end */}
-                                            {/* start */}
-                                            <div className="checkbox-box check-three">
-                                                <input
-                                                    type="radio"
-                                                    name="residstatus"
-                                                    id="councilTenant"
-                                                    value="councilTenant"
-                                                    defaultChecked={residentialRadio === 'councilTenant'}
-                                                    onClick={(e) => residentialRadioFun(e.target.value)}
-                                                />
-                                                <label className="chk-label" htmlFor="councilTenant">
-                                                    <span> Council tenant </span>
-                                                </label>
-                                            </div>
-                                            {/* end */}
-                                        </div>
-                                    </div>
-                                    {/* end */}
-                                    {/* [disabled] */}
-                                    <button className="button button--block">Continue</button>
-                                </form>
+                                        {/* end */}
+                                        {/* [disabled] */}
+                                        <button className="button button--block">Continue</button>
+                                    </form>
+                                </div>
 
                             </div>
                             {/* end */}

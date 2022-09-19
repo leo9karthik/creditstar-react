@@ -29,12 +29,14 @@ const WelcomeStep1 = () => {
     let percentage = (steps / 4) * 100;
     /* steps end */
 
-    const navigate = useNavigate();
-
+    /* usestate */
     const [titleRadio, setTitleRadio] = useState('mr');
     const [dependentRadio, setDependentRadio] = useState('one');
+    /* usestate end */
 
+    const navigate = useNavigate();
 
+    /* react-form-hook */
     const {
         register,
         handleSubmit,
@@ -43,7 +45,7 @@ const WelcomeStep1 = () => {
         // mode: "onBlur",
         mode: "all",
     });
-
+    /* react-form-hook end */
 
     /* get radio */
     const titleRadioFun = (value) => {
@@ -57,7 +59,7 @@ const WelcomeStep1 = () => {
     }
     /* get radio end */
 
-
+    /* Post data */
     const onSubmit = (data) => {
         let inputData = data;
         console.log(inputData);
@@ -95,7 +97,7 @@ const WelcomeStep1 = () => {
 
 
                 // redirect to Address History 
-                navigate("/welcome-step-2", { replace: true });
+                navigate("/address-lookup", { replace: true });
             })
             .catch((error) => {
                 console.log(error);
@@ -113,6 +115,7 @@ const WelcomeStep1 = () => {
             });
 
     }
+    /* Post data end */
 
 
     useEffect(() => {
@@ -348,7 +351,7 @@ const WelcomeStep1 = () => {
                                                     <div className="form-grp">
                                                         <input
                                                             className="form-field"
-                                                            type="text"
+                                                            type="number"
                                                             id="ddbirth"
                                                             name="ddbirth"
                                                             {...register("ddbirth", {
@@ -370,7 +373,7 @@ const WelcomeStep1 = () => {
                                                     <div className="form-grp">
                                                         <input
                                                             className="form-field"
-                                                            type="text"
+                                                            type="number"
                                                             id="mmbirth"
                                                             name="mmbirth"
                                                             {...register("mmbirth", {
@@ -392,7 +395,7 @@ const WelcomeStep1 = () => {
                                                     <div className="form-grp">
                                                         <input
                                                             className="form-field"
-                                                            type="text"
+                                                            type="number"
                                                             id="yybirth"
                                                             name="yybirth"
                                                             {...register("yybirth", {

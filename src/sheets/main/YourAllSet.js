@@ -1,12 +1,34 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import Header from '../../components/Header'
-import Lottie from "lottie-react";
+import { Player } from '@lottiefiles/react-lottie-player';
 import animationData from '../../assests/json/congo.json';
 
 const { REACT_APP_PUBLIC_URL } = process.env;
 
 const YourAllSet = () => {
 
+
+    /* animation */
+    const loaderAnim = useRef(null);
+    const animPlay = () => {
+        loaderAnim.current.play();
+    }
+    /* animation end */
+
+    /* usestate */
+    const [showLoanCal, setShowLoanCal] = useState(false);
+    /* usestate end */
+
+    const intialAmount = localStorage.getItem('amount');
+    const intialPeriod = localStorage.getItem('period');
+    const intialMonthlyPayment = localStorage.getItem('monthlyPayment');
+
+
+    /* toggle loan calculator */
+    const toggleLoanCal = () => {
+        setShowLoanCal(!showLoanCal);
+    }
+    /* toggle loan calculator end */
 
     return (
         <div>
@@ -30,18 +52,17 @@ const YourAllSet = () => {
 
                                     {/* start */}
                                     <div className="yourallset-lottie">
-                                        <Lottie
-                                            animationData={animationData}
-                                            options={{
-                                                // loop: true,
-                                                autoplay: true,
-                                                animationData: animationData,
-                                                width: 500,
-                                                rendererSettings: {
-                                                    preserveAspectRatio: "xMidYMid slice"
+                                        <Player
+                                            onEvent={event => {
+                                                if (event === 'load') {
+                                                    animPlay();
                                                 }
                                             }}
-
+                                            ref={loaderAnim}
+                                            // loop={1}
+                                            autoplay={true}
+                                            controls={true}
+                                            src={animationData}
                                         />
                                     </div>
                                     {/* end */}
@@ -66,24 +87,26 @@ const YourAllSet = () => {
                                 </div>
                                 <div className="check-list">
                                     <div className="check-lis-hdn">Amount</div>
-                                    <p className="check-amount">£2500</p>
+                                    <p className="check-amount">£{intialAmount}</p>
                                 </div>
                                 <div className="check-list">
                                     <div className="check-lis-hdn">Period</div>
-                                    <p className="check-amount">18 months</p>
+                                    <p className="check-amount">{intialPeriod / 30} months</p>
                                 </div>
                                 <div className="check-list">
                                     <div className="check-lis-hdn">Monthly payment</div>
-                                    <p className="check-amount">£171.82</p>
+                                    <p className="check-amount">£{intialMonthlyPayment}</p>
                                 </div>
                             </div>
                             {/* end */}
                             {/* start */}
                             <div className="checkout-list-box">
                                 <div className="repay-link mob-comp">
-                                    <a href="#" className="comm-link">Repayment schedule</a>
+                                    <a href="javascript:void(0)" className="comm-link" onClick={() => toggleLoanCal()}>
+                                        {!showLoanCal ? 'Repayment schedule' : 'Close'}
+                                    </a>
                                 </div>
-                                <div className="repayment-list">
+                                <div className={!showLoanCal ? 'repayment-list' : ''}>
                                     <div className="check-list check-list-head">
                                         <h6 className="form-quest">Repayment schedule</h6>
                                         <a href="#" className="comm-link2">See all</a>
@@ -103,6 +126,7 @@ const YourAllSet = () => {
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                             {/* end */}
                             {/* start */}

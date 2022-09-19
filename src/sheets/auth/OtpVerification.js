@@ -130,7 +130,7 @@ const OtpVerification = () => {
 
                 // redirect to Welcome
                 // navigate("/welcome", { replace: true });
-                navigate("/welcome-step-1", { replace: true });
+                navigate("/basic-info", { replace: true });
             })
             .catch((error) => {
                 console.log(error);
@@ -235,7 +235,7 @@ const OtpVerification = () => {
                                 </h2>
                                 <div className="auth-para">
                                     <p>We have sent a code to
-                                        <i><span>07554446921</span>. <a href="#" onClick={() => changeNumber()}> Change</a></i>
+                                        <i><span>07554446921</span>. <a href="javascript:void(0)" onClick={() => changeNumber()}> Change</a></i>
                                     </p>
                                 </div>
                             </div>
@@ -260,7 +260,7 @@ const OtpVerification = () => {
                                     {errors.verificationcode &&
                                         <div className="form-input-error">
                                             <i className="icon-input-error"></i>
-                                            <p>A short piece of information</p>
+                                            <p>{errors.verificationcode.message}</p>
                                         </div>
                                     }
                                 </div>

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import RequireAuth from "./service/RequireAuth";
 
 import Login from "./sheets/auth/Login";
@@ -35,14 +35,14 @@ function App() {
         {/* Auth Pages ends here */}
 
 
-        {/* Steps Pages starts here */}
+        {/* Info Pages starts here */}
         <Route path="/welcome" element={<RequireAuth><Welcome /></RequireAuth>} />
-        <Route path="/welcome-step-1" element={<RequireAuth><WelcomeStep1 /></RequireAuth>} />
-        <Route path="/welcome-step-2" element={<RequireAuth><WelcomeStep2 /></RequireAuth>} />
-        <Route path="/welcome-step-2-1" element={<RequireAuth><WelcomeStep2In1 /></RequireAuth>} />
-        <Route path="/welcome-step-3" element={<RequireAuth><WelcomeStep3 /></RequireAuth>} />
-        <Route path="/welcome-step-4" element={<RequireAuth><WelcomeStep4 /></RequireAuth>} />
-        {/* Steps Pages ends here */}
+        <Route path="/basic-info" element={<RequireAuth><WelcomeStep1 /></RequireAuth>} />
+        <Route path="/address-lookup" element={<RequireAuth><WelcomeStep2 /></RequireAuth>} />
+        <Route path="/current-address" element={<RequireAuth><WelcomeStep2In1 /></RequireAuth>} />
+        <Route path="/finances" element={<RequireAuth><WelcomeStep3 /></RequireAuth>} />
+        <Route path="/bank-details" element={<RequireAuth><WelcomeStep4 /></RequireAuth>} />
+        {/* Info Pages ends here */}
 
 
         {/* Static Pages starts here */}

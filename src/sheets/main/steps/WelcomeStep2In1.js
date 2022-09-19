@@ -21,9 +21,9 @@ const WelcomeStep2In1 = () => {
     let percentage = (steps / 4) * 100;
     /* steps end */
 
-
     const navigate = useNavigate();
 
+    /* react-form-hook */
     // const {
     //     register,
     //     handleSubmit,
@@ -32,17 +32,22 @@ const WelcomeStep2In1 = () => {
     //     // mode: "onBlur",
     //     mode: "all",
     // });
+    /* react-form-hook end */
 
 
+    /* Post data */
     // const onSubmit = (data) => {
     //     let payload = data;
     //     console.log(payload);
 
     //     // redirect to dashboard
-    //     navigate("/welcome-step-3", { replace: true });
+    //     navigate("/finances", { replace: true });
     // }
 
-
+    const residencyDataFun = () => {
+        navigate("/finances", { replace: true });
+    }
+    /* Post data end */
 
     useEffect(() => {
 
@@ -129,7 +134,7 @@ const WelcomeStep2In1 = () => {
                                     </div>
                                 </div>
                                 {/* [disabled] */}
-                                <button className="button button--block">Continue</button>
+                                <button className="button button--block" onClick={() => residencyDataFun()}>Continue</button>
                             </div>
                             {/* end */}
                         </div>

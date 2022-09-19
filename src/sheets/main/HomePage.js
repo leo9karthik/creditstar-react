@@ -29,15 +29,17 @@ const HomePage = () => {
         let inputData = data;
         // console.log(inputData);
 
-        let numAmout = inputData?.amount;
-        let numDuration = inputData?.duration;
+        let numAmout = Number.parseInt(inputData?.amount);
+        let numDuration = Number.parseInt(inputData?.duration);
+
+        let monthCal = numDuration * 30;
         // console.log(+numAmout, +numDuration);
 
         let payload = {
             "action": "submit",
             "data": {
-                "amount": +numAmout,
-                "duration": +numDuration
+                "amount": numAmout,
+                "duration": monthCal
             }
         }
         // console.log(payload);
@@ -53,9 +55,20 @@ const HomePage = () => {
                 authCtx.currentStepFunc(result?.currentStepId);
 
 
+                /* Monthly payment interest calculation */
+                localStorage.setItem('amount', numAmout);
+                localStorage.setItem('period', monthCal);
 
-                localStorage.setItem('amount', +numAmout)
-                localStorage.setItem('period', +numDuration)
+
+                let totalInterest = numDuration * 6;
+                let calculateIntersetAmout = numAmout * (totalInterest / 100);
+
+                let totalAmountWithInt = numAmout + calculateIntersetAmout;
+                let monthlyPayment = (totalAmountWithInt / numDuration).toFixed(2);
+
+                localStorage.setItem('monthlyPayment', monthlyPayment);
+                /* Monthly payment interest calculation end */
+
 
                 // console.log('cookies', cookies.getAll());
                 // console.log('cookies PHPSESSID', cookies.get('PHPSESSID'));
@@ -109,7 +122,7 @@ const HomePage = () => {
                                             type="number"
                                             id="amount"
                                             name="amount"
-                                            defaultValue={800}
+                                            defaultValue={500}
                                             autoComplete="off"
                                             {...register("amount", {
                                                 required: "Amount is required",
@@ -139,8 +152,7 @@ const HomePage = () => {
                                             type="number"
                                             id="duration"
                                             name="duration"
-                                            defaultValue={12}
-                                            
+                                            defaultValue={6}
                                             autoComplete="off"
                                             {...register("duration", {
                                                 required: "Duration is required",

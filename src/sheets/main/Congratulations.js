@@ -1,14 +1,25 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header'
 import { useForm } from "react-hook-form";
+import axios from 'axios';
+import AuthContext from '../../store/auth-context';
+import gs from '../../service/global';
+import { toast } from 'react-toastify';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const Congratulations = () => {
+    const authCtx = useContext(AuthContext);
+    var instanceId = authCtx?.instanceId;
+
+    /* usestate */
+    const [showLoanCal, setShowLoanCal] = useState(false);
+    /* usestate end */
 
     const navigate = useNavigate();
 
+    /* react-form-hook */
     const {
         register,
         handleSubmit,
@@ -17,14 +28,63 @@ const Congratulations = () => {
         // mode: "onBlur",
         mode: "all",
     });
+    /* react-form-hook end */
 
 
+    /* Post data */
     const onSubmit = (data) => {
-        let payload = data;
-        console.log(payload);
+        let inputData = data;
+        console.log(inputData);
 
+        // let payload = {
+        //   "action": "submit",
+        //   "data": {
+        //     "repaymentDate": inputData?.postcode,
+        //   }
+        // }
+        // console.log(payload);
+
+
+        /* Loader Starts */
+        // gs.showLoader(true);
+        /* Loader Ends */
+
+        // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+        //     .then((response) => {
+        //         const result = response?.data;
+        //         AuthContext.currentStepFunc(result?.currentStepId);
+        //         console.log(result);
+
+        //         /* Loader Starts */
+        //         gs.showLoader(false);
+        //         /* Loader Ends */
+
+        //         // // redirect to Card Detail 
         navigate("/card-detail", { replace: true });
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+
+        //         toast.error('Something went wrong!', {
+        //             position: "top-right",
+        //             autoClose: 4000,
+        //             hideProgressBar: false,
+        //             closeOnClick: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             progress: undefined,
+        //         });
+
+        //     });
+
     }
+    /* Post data end */
+
+    /* toggle loan calculator */
+    const toggleLoanCal = () => {
+        setShowLoanCal(!showLoanCal);
+    }
+    /* toggle loan calculator end */
 
     return (
         <div>
@@ -61,10 +121,12 @@ const Congratulations = () => {
                             <div className="checkout-list-box">
                                 <div className="check-list check-list-head">
                                     <div className="check-lis-hdn">Loan details</div>
-                                    <a href="#" className="comm-link">Change</a>
+                                    <a href="javascript:void(0)" className="comm-link" onClick={() => toggleLoanCal()}>
+                                        {!showLoanCal ? 'Change' : 'Save'}
+                                    </a>
                                 </div>
 
-                                <div className="dnone">
+                                <div className={!showLoanCal ? 'dnone' : ''}>
                                     <div className="rnge-slide-box">
                                         <div className="rnge-slide">
                                             <div className="rnge-top">
@@ -143,11 +205,11 @@ const Congratulations = () => {
 
                                         >
                                             <option></option>
-                                            <option>1st of every month</option>
-                                            <option>1st of every month</option>
-                                            <option>1st of every month</option>
-                                            <option>1st of every month</option>
-                                            <option>1st of every month</option>
+                                            <option value="date1">1st of every month</option>
+                                            <option value="date2">1st of every month</option>
+                                            <option value="date3">1st of every month</option>
+                                            <option value="date4">1st of every month</option>
+                                            <option value="date5">1st of every month</option>
                                         </select>
                                         {/* <p class="form-label">1st of every month</p> */}
                                     </div>
@@ -176,11 +238,11 @@ const Congratulations = () => {
 
                                         >
                                             <option></option>
-                                            <option>£171.82, 1st July 2022</option>
-                                            <option>£171.82, 1st July 2022</option>
-                                            <option>£171.82, 1st July 2022</option>
-                                            <option>£171.82, 1st July 2022</option>
-                                            <option>£171.82, 1st July 2022</option>
+                                            <option value="schedule1">£171.82, 1st July 2022</option>
+                                            <option value="schedule2">£171.82, 1st July 2022</option>
+                                            <option value="schedule3">£171.82, 1st July 2022</option>
+                                            <option value="schedule4">£171.82, 1st July 2022</option>
+                                            <option value="schedule5">£171.82, 1st July 2022</option>
                                         </select>
                                         {/* <p class="form-label">£171.82, 1st July 2022</p> */}
                                     </div>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../../../components/Header'
-import LoanCalComp from '../../../components/LoanCalComp'
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -35,8 +34,20 @@ const WelcomeStep4 = () => {
 
 
   const onSubmit = (data) => {
-    let payload = data;
-    console.log(payload);
+    let inputData = data;
+    console.log(inputData);
+
+    // let payload = {
+    //   "action": "submit",
+    //   "data": {
+    //     "employmentStatus": inputData?.postcode,
+    //     "netMonthlyIncome": "4000",
+    //     "monthlySpending": "2500",
+    //     "accountNumber": "31926819",
+    //     "sortCode": "601613"
+    //   }
+    // }
+    // console.log(payload);
 
     navigate("/almost-done", { replace: true });
   }

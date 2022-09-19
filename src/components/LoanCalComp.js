@@ -8,33 +8,10 @@ import AuthContext from '../store/auth-context';
 
 const { REACT_APP_FLOWID } = process.env;
 
-const LoanCalComp = ({ getAmount, getDuration }) => {
+const LoanCalComp = ({ getAmount, getDuration, getMonthly }) => {
     const authCtx = useContext(AuthContext);
     var instanceId = authCtx?.instanceId;
     // console.log(instanceId);
-
-
-    const intialAmount = localStorage.getItem('amount');
-    const intialPeriod = localStorage.getItem('period');
-    let numIntialAmount = Number.parseInt(intialAmount);
-    let numIntialPeriod = Number.parseInt(intialPeriod);
-    // console.log(numIntialAmount, numIntialPeriod);
-
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm({
-        mode: "all",
-        // mode: "onBlur",
-    });
-
-
-
-    /* calculate months */
-
-    /* calculate months end */
 
 
     /* loan calculator add remove class */
@@ -55,9 +32,36 @@ const LoanCalComp = ({ getAmount, getDuration }) => {
 
 
 
+
+    const intialAmount = localStorage.getItem('amount');
+    const intialPeriod = localStorage.getItem('period');
+
+    const intialMonthlyPayment = localStorage.getItem('monthlyPayment');
+
+    let numIntialAmount = Number.parseInt(intialAmount);
+    let numIntialPeriod = Number.parseInt(intialPeriod);
+
+    let daysToMonths = numIntialPeriod / 30;
+    // console.log(numIntialAmount, numIntialPeriod);
+
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm({
+        mode: "all",
+        // mode: "onBlur",
+    });
+
+
+
     /* range slider */
     const [amtSlideValue, setAmtSlideValue] = useState(numIntialAmount);
-    const [periodSlideValue, setPeriodSlideValue] = useState(numIntialPeriod);
+    const [periodSlideValue, setPeriodSlideValue] = useState(daysToMonths);
+
+    const [monthlyPaymentValue, setMonthlyPayment] = useState(intialMonthlyPayment);
+
 
     const handleChangeLoan = (value) => {
         // console.log(value);
@@ -70,11 +74,36 @@ const LoanCalComp = ({ getAmount, getDuration }) => {
     }
 
 
+
+
+    /* Monthly payment interest calculation */
+    function calculateMonthlyPayment() {
+        let totalInterest = periodSlideValue * 6;
+        let calculateIntersetAmout = amtSlideValue * (totalInterest / 100);
+
+        let totalAmountWithInt = amtSlideValue + calculateIntersetAmout;
+        let monthlyPayment = (totalAmountWithInt / periodSlideValue).toFixed(2);
+        let numMonthlyPayment = +monthlyPayment
+        localStorage.setItem('monthlyPayment', numMonthlyPayment);
+
+        // console.log({
+        //     periodSlideValue, amtSlideValue,totalInterest, calculateIntersetAmout, totalAmountWithInt, numMonthlyPayment
+        // });
+
+        setMonthlyPayment(numMonthlyPayment);
+        getMonthly(numMonthlyPayment);
+    }
+    /* Monthly payment interest calculation end */
+
+
+
     /* send calculated value */
     const handleChangeCompleteLoan = () => {
-        console.log('Change event completed Loan', amtSlideValue);
+        // console.log('Change event completed Loan', amtSlideValue);
         getAmount(amtSlideValue);
-        localStorage.setItem('amount', amtSlideValue)
+        localStorage.setItem('amount', amtSlideValue);
+
+        calculateMonthlyPayment();
 
         let payload = {
             "action": "submit",
@@ -88,16 +117,18 @@ const LoanCalComp = ({ getAmount, getDuration }) => {
     };
 
     const handleChangeCompletePeriod = () => {
-        console.log('Change event completed Period', periodSlideValue);
+        let monthCal = periodSlideValue * 30;
         getDuration(periodSlideValue);
-        localStorage.setItem('period', periodSlideValue)
+        localStorage.setItem('period', monthCal)
+        // console.log('Change event completed Period', periodSlideValue);
 
+        calculateMonthlyPayment();
 
         let payload = {
             "action": "submit",
             "data": {
                 "amount": amtSlideValue,
-                "duration": periodSlideValue
+                "duration": monthCal
             }
         }
         // console.log(payload);
@@ -105,7 +136,7 @@ const LoanCalComp = ({ getAmount, getDuration }) => {
     };
 
     function getPayload(payload) {
-        console.log(payload);
+        // console.log(payload);
 
         // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
         //     .then((response) => {
@@ -140,12 +171,20 @@ const LoanCalComp = ({ getAmount, getDuration }) => {
         let numValue = +value;
         // console.log(numValue);
         setAmtSlideValue(numValue);
+
+        setTimeout(() => {
+            calculateMonthlyPayment();
+        }, 1000);
     }
 
     const getPeriodValue = (value) => {
         let numValue = +value;
         // console.log(numValue);
         setPeriodSlideValue(numValue);
+
+        setTimeout(() => {
+            calculateMonthlyPayment();
+        }, 1000);
     }
     /* range slider end */
 
@@ -305,7 +344,7 @@ const LoanCalComp = ({ getAmount, getDuration }) => {
                     </div>
                     <div className="rnge-total">
                         <h6 className="rnge-total-hdn">Estimated monthly payment</h6>
-                        <h6 className="rnge-total-price">£171.82</h6>
+                        <h6 className="rnge-total-price">£{monthlyPaymentValue}</h6>
                     </div>
                     <div className="comm-disclaim mb0">
                         <p>

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../../../components/Header'
-import LoanCalComp from '../../../components/LoanCalComp'
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -8,22 +7,33 @@ import { useForm } from "react-hook-form";
 import formService from '../../../service/formService';
 import { useNavigate } from 'react-router-dom';
 import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
+import gs from '../../../service/global';
+import axios from 'axios';
+import AuthContext from '../../../store/auth-context';
+import { toast } from 'react-toastify';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const WelcomeStep3 = () => {
+  const authCtx = useContext(AuthContext);
+  var instanceId = authCtx?.instanceId;
+  // console.log(instanceId);
 
   /* steps */
-    const [steps, setSteps] = useState(2);
-    setTimeout(() => {
-        setSteps(3)
-    }, 1000);
+  const [steps, setSteps] = useState(2);
+  setTimeout(() => {
+    setSteps(3)
+  }, 1000);
   let percentage = (steps / 4) * 100;
   /* steps end */
 
+  /* usestate */
+  const [employedRadio, setEmployedRadio] = useState('fulltime');
+  /* usestate end */
 
   const navigate = useNavigate();
 
+  /* react-form-hook */
   const {
     register,
     handleSubmit,
@@ -32,14 +42,71 @@ const WelcomeStep3 = () => {
     // mode: "onBlur",
     mode: "all",
   });
+  /* react-form-hook end */
 
 
+  /* Post data */
   const onSubmit = (data) => {
-    let payload = data;
-    console.log(payload);
+    let inputData = data;
+    console.log(inputData);
 
-    navigate("/welcome-step-4", { replace: true });
+    let payload = {
+      "action": "submit",
+      "data": {
+        "employmentStatus": inputData?.postcode,
+        "netMonthlyIncome": "4000",
+        "monthlySpending": "2500",
+        "accountNumber": "31926819",
+        "sortCode": "601613"
+      }
+    }
+    // console.log(payload);
+
+    /* Loader Starts */
+    // gs.showLoader(true);
+    /* Loader Ends */
+
+    // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+    //   .then((response) => {
+    //     const result = response?.data;
+    //     AuthContext.currentStepFunc(result?.currentStepId);
+    //     console.log(result);
+
+    //     /* Loader Starts */
+    //     gs.showLoader(false);
+    //     /* Loader Ends */
+
+    //     // // redirect to Bank Details 
+    navigate("/bank-details", { replace: true });
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+
+    //     toast.error('Something went wrong!', {
+    //       position: "top-right",
+    //       autoClose: 4000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+
+    //   });
+
+
   }
+  /* Post data end */
+
+
+
+  /* get radio data */
+  const employedRadioFun = (value) => {
+    console.log(value);
+    setEmployedRadio(value);
+  }
+
+  /* get radio data end */
 
 
   useEffect(() => {
@@ -118,9 +185,11 @@ const WelcomeStep3 = () => {
                       <div className="checkbox-box check-three">
                         <input
                           type="radio"
-                          id="fulltime"
                           name="empstatus"
-                          {...register("fulltime")}
+                          id="fulltime"
+                          value="fulltime"
+                          defaultChecked={employedRadio === 'fulltime'}
+                          onClick={(e) => employedRadioFun(e.target.value)}
                         />
                         <label className="chk-label" htmlFor="fulltime">
                           <span> Full-time employed </span>
@@ -131,9 +200,11 @@ const WelcomeStep3 = () => {
                       <div className="checkbox-box check-three">
                         <input
                           type="radio"
-                          id="parttime"
                           name="empstatus"
-                          {...register("parttime")}
+                          id="parttime"
+                          value="parttime"
+                          defaultChecked={employedRadio === 'parttime'}
+                          onClick={(e) => employedRadioFun(e.target.value)}
                         />
                         <label className="chk-label" htmlFor="parttime">
                           <span> Part-time employed </span>
@@ -144,9 +215,11 @@ const WelcomeStep3 = () => {
                       <div className="checkbox-box check-three">
                         <input
                           type="radio"
-                          id="selfemp"
                           name="empstatus"
-                          {...register("selfemp")}
+                          id="selfemp"
+                          value="selfemp"
+                          defaultChecked={employedRadio === 'selfemp'}
+                          onClick={(e) => employedRadioFun(e.target.value)}
                         />
                         <label className="chk-label" htmlFor="selfemp">
                           <span> Self-employed </span>
@@ -157,9 +230,11 @@ const WelcomeStep3 = () => {
                       <div className="checkbox-box check-three">
                         <input
                           type="radio"
-                          id="other"
                           name="empstatus"
-                          {...register("other")}
+                          id="other"
+                          value="other"
+                          defaultChecked={employedRadio === 'other'}
+                          onClick={(e) => employedRadioFun(e.target.value)}
                         />
                         <label className="chk-label" htmlFor="other">
                           <span> Other </span>
@@ -204,11 +279,11 @@ const WelcomeStep3 = () => {
                       <div className="form-grp form-inp-txt">
                         <input
                           className="form-field"
-                          type="text"
+                          type="number"
                           id="monthincome"
                           name="monthincome"
                           {...register("monthincome", {
-                            required: "council is required"
+                            required: "Monthly income is required"
                           })}
                         />
                         <p className="form-label">£</p>
@@ -233,11 +308,15 @@ const WelcomeStep3 = () => {
                         <div className="form-grp form-inp-txt">
                           <input
                             className="form-field"
-                            type="text"
+                            type="number"
                             id="council"
                             name="council"
                             {...register("council", {
-                              required: "council is required"
+                              required: "Council is required",
+                              // pattern: {
+                              //   value: /^[0-9]*$/,
+                              //   message: "Enter a valid number"
+                              // }
                             })}
                           />
                           <p className="form-label">Council Tax (£) </p>
@@ -254,20 +333,20 @@ const WelcomeStep3 = () => {
                         <div className="form-grp form-inp-txt">
                           <input
                             className="form-field"
-                            type="text"
-                            id="council"
-                            name="council"
-                            {...register("council", {
-                              required: "council is required"
+                            type="number"
+                            id="utilities"
+                            name="utilities"
+                            {...register("utilities", {
+                              required: "Utilities is required"
                             })}
                           />
                           <p className="form-label">Utilities (£) </p>
                           <em>£</em>
                         </div>
-                        {errors.council &&
+                        {errors.utilities &&
                           <div className="form-input-error">
                             <i className="icon-input-error"></i>
-                            <p>{errors.council.message}</p>
+                            <p>{errors.utilities.message}</p>
                           </div>
                         }
                       </div>
@@ -275,7 +354,7 @@ const WelcomeStep3 = () => {
                         <div className="form-grp form-inp-txt">
                           <input
                             className="form-field"
-                            type="text"
+                            type="number"
                             id="rent"
                             name="rent"
                             {...register("rent", {
@@ -296,7 +375,7 @@ const WelcomeStep3 = () => {
                         <div className="form-grp form-inp-txt">
                           <input
                             className="form-field"
-                            type="text"
+                            type="number"
                             id="groceries"
                             name="groceries"
                             {...register("groceries", {
@@ -317,7 +396,7 @@ const WelcomeStep3 = () => {
                         <div className="form-grp form-inp-txt">
                           <input
                             className="form-field"
-                            type="text"
+                            type="number"
                             id="transport"
                             name="transport"
                             {...register("transport", {
@@ -338,7 +417,7 @@ const WelcomeStep3 = () => {
                         <div className="form-grp form-inp-txt">
                           <input
                             className="form-field"
-                            type="text"
+                            type="number"
                             id="expenses"
                             name="expenses"
                             {...register("expenses", {

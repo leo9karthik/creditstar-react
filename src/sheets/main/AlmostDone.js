@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useRef } from 'react'
 import Header from '../../components/Header'
-import Lottie from "lottie-react";
+import { Player } from '@lottiefiles/react-lottie-player';
 import animationData from '../../assests/json/loader_full.json';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,19 +9,19 @@ const { REACT_APP_PUBLIC_URL } = process.env;
 const AlmostDone = () => {
     const navigate = useNavigate();
 
-    // const [secondLottie, setSecondLottie] = useState(false)
 
-    useEffect(() => {
+    /* animation */
+    const loaderAnim = useRef(null);
+    const animPlay = () => {
+        loaderAnim.current.play();
+    }
+    const animCompleted = () => {
+        console.log("Animation completed");
 
+        navigate("/congratulations", { replace: true });
+    }
+    /* animation end */
 
-        // setTimeout(() => {
-        //     console.log("123");
-
-        //     navigate("/congratulations", { replace: true });
-        // }, 3000);
-
-
-    }, [])
 
 
 
@@ -42,19 +42,25 @@ const AlmostDone = () => {
                     <div className="comm-box congo-box">
 
                         <div className="congo-lottie">
-                            <Lottie
-                                animationData={animationData}
-                                options={{
-                                    // loop: true,
-                                    autoplay: true,
-                                    animationData: animationData,
-                                    width: 500,
-                                    rendererSettings: {
-                                        preserveAspectRatio: "xMidYMid slice"
+
+                            <Player
+                                onEvent={event => {
+                                    if (event === 'load') {
+                                        animPlay();
+                                    }
+
+                                    if (event === 'complete') {
+                                        animCompleted();
                                     }
                                 }}
-
+                                ref={loaderAnim}
+                                autoplay={true}
+                                controls={true}
+                                src={animationData}
                             />
+
+
+
                         </div>
                         <div className="congo-cont">
                             <h4 className="congo-hdn">Almost done</h4>

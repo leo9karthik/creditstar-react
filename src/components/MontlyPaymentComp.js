@@ -6,21 +6,34 @@ const { REACT_APP_PUBLIC_URL } = process.env;
 const MontlyPaymentComp = () => {
     const intialAmount = localStorage.getItem('amount');
     const intialPeriod = localStorage.getItem('period');
+
+    const intialMonthlyPayment = localStorage.getItem('monthlyPayment');
+
+    let daysToMonths = intialPeriod / 30;
     // console.log(intialAmount, intialPeriod);
 
 
+    
+
+
     const [amountData, setAmountData] = useState(intialAmount)
-    const [durationData, setDurationData] = useState(intialPeriod)
+    const [durationData, setDurationData] = useState(daysToMonths)
+    const [monthlyData, setMonthlyData] = useState(intialMonthlyPayment)
 
     /* our call back function */
     const getAmount = (value) => {
-        console.log(value);
+        // console.log(value);
         setAmountData(value);
     }
-    
+
     const getDuration = (value) => {
-        console.log(value);
+        // console.log(value);
         setDurationData(value);
+    }
+
+    const getMonthly = (value) => {
+        // console.log(value);
+        setMonthlyData(value);
     }
     /* our call back function end */
 
@@ -33,7 +46,7 @@ const MontlyPaymentComp = () => {
                 <div className="wel-cont-box">
                     <div className="wel-mont-pay">
                         <h5 className="wel-hdn">Monthly payment</h5>
-                        <h6 className="wel-pay-val">£171.82</h6>
+                        <h6 className="wel-pay-val">£{monthlyData}</h6>
                     </div>
                     <div className="wel-flex">
                         {/* start */}
@@ -61,7 +74,7 @@ const MontlyPaymentComp = () => {
                     </div>
                 </div>
             </div>
-            <LoanCalComp getAmount={getAmount} getDuration={getDuration} />
+            <LoanCalComp getAmount={getAmount} getDuration={getDuration} getMonthly={getMonthly} />
         </>
     )
 }

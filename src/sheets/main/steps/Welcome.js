@@ -9,6 +9,7 @@ const { REACT_APP_PUBLIC_URL } = process.env;
 const Welcome = () => {
     const navigate = useNavigate();
 
+    /* react-form-hook */
     const {
         register,
         handleSubmit,
@@ -17,15 +18,17 @@ const Welcome = () => {
         // mode: "onBlur",
         mode: "all",
     });
+    /* react-form-hook end */
 
-
+    /* Post data */
     const onSubmit = (data) => {
         let payload = data;
         console.log(payload);
- 
+
         // redirect to Basic Info
-        navigate("/welcome-step-1", { replace: true });
+        navigate("/basic-info", { replace: true });
     }
+    /* Post data end */
 
 
 
