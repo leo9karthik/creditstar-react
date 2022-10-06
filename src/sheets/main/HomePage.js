@@ -74,10 +74,11 @@ const HomePage = () => {
                 // console.log('cookies PHPSESSID', cookies.get('PHPSESSID'));
                 // console.log("headers", response.headers);
 
-                navigate("/login", { replace: true });
+                // navigate("/login", { replace: true });
             })
             .catch((error) => {
                 console.log(error);
+
             });
     }
 

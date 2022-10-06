@@ -53,14 +53,20 @@ const WelcomeStep3 = () => {
     let payload = {
       "action": "submit",
       "data": {
-        "employmentStatus": inputData?.postcode,
-        "netMonthlyIncome": "4000",
-        "monthlySpending": "2500",
-        "accountNumber": "31926819",
-        "sortCode": "601613"
+        "employmentStatus": employedRadio,
+        "organization": inputData?.organization,
+        "netMonthlyIncome": inputData?.monthincome,
+        "monthlyCouncilTax": inputData?.council,
+        "monthlyUtilities": inputData?.utilities,
+        "monthlyRentMortgage": inputData?.rent,
+        "monthlyGroceries": inputData?.groceries,
+        "monthlyTransport": inputData?.transport,
+        "monthlyOthers": inputData?.expenses,
+        "amount": authCtx?.amountSlideValue + "",
+        "duration": authCtx?.periodSlideValue + "",
       }
     }
-    // console.log(payload);
+    console.log(payload);
 
     /* Loader Starts */
     // gs.showLoader(true);
@@ -76,11 +82,15 @@ const WelcomeStep3 = () => {
     //     gs.showLoader(false);
     //     /* Loader Ends */
 
-    //     // // redirect to Bank Details 
-    navigate("/bank-details", { replace: true });
+    //     // redirect to Bank Details 
+    // navigate("/bank-details", { replace: true });
     //   })
     //   .catch((error) => {
     //     console.log(error);
+
+    // /* Loader Starts */
+    // gs.showLoader(false);
+    // /* Loader Ends */
 
     //     toast.error('Something went wrong!', {
     //       position: "top-right",

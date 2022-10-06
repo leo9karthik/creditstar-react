@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Header from '../../../components/Header'
-import LoanCalComp from '../../../components/LoanCalComp'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment';
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -12,6 +14,7 @@ import AuthContext from '../../../store/auth-context';
 import { toast } from 'react-toastify';
 import gs from '../../../service/global';
 import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
+
 
 const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
@@ -32,6 +35,10 @@ const WelcomeStep1 = () => {
     /* usestate */
     const [titleRadio, setTitleRadio] = useState('mr');
     const [dependentRadio, setDependentRadio] = useState('one');
+
+    const [startDate, setStartDate] = useState(new Date());
+    const [startMonth, setStartMonth] = useState(new Date());
+    const [startYear, setStartYear] = useState(new Date());
     /* usestate end */
 
     const navigate = useNavigate();
@@ -49,12 +56,12 @@ const WelcomeStep1 = () => {
 
     /* get radio */
     const titleRadioFun = (value) => {
-        console.log(value);
+        // console.log(value);
         setTitleRadio(value);
     }
 
     const dependentRadioFun = (value) => {
-        console.log(value);
+        // console.log(value);
         setDependentRadio(value);
     }
     /* get radio end */
@@ -64,7 +71,8 @@ const WelcomeStep1 = () => {
         let inputData = data;
         console.log(inputData);
 
-        const dobValue = `${inputData?.yybirth}-${inputData?.mmbirth}-${inputData?.ddbirth}`;
+        // const dobValue = `${inputData?.yybirth}-${inputData?.mmbirth}-${inputData?.ddbirth}`;
+        const dobValue = `${moment(startYear).format('yyyy')}-${moment(startMonth).format('MM')}-${moment(startDate).format('DD')}`;
         console.log(dobValue);
 
         let payload = {
@@ -101,6 +109,10 @@ const WelcomeStep1 = () => {
             })
             .catch((error) => {
                 console.log(error);
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
 
                 toast.error('Something went wrong!', {
                     position: "top-right",
@@ -348,17 +360,28 @@ const WelcomeStep1 = () => {
                                         <div className="f-row custm-frow">
                                             <div className="w25">
                                                 <div className="form-grp-field">
-                                                    <div className="form-grp">
-                                                        <input
+                                                    <div className="form-grp sTop">
+                                                        <p className="form-label">DD</p>
+                                                        {/* <input
                                                             className="form-field"
                                                             type="number"
                                                             id="ddbirth"
                                                             name="ddbirth"
                                                             {...register("ddbirth", {
-                                                                required: "Date is required"
+                                                                required: "Date is required",
                                                             })}
+                                                        /> */}
+                                                        <DatePicker
+                                                            className="form-field"
+                                                            selected={startDate}
+                                                            dateFormat="dd"
+                                                            autoComplete='off'
+                                                            onChange={(date) => setStartDate(date)}
+                                                        // name="ddbirth"
+                                                        // {...register("ddbirth", {
+                                                        //     required: "Date is required",
+                                                        // })}
                                                         />
-                                                        <p className="form-label">DD</p>
                                                     </div>
                                                     {/* {errors.ddbirth &&
                                                         <div className="form-input-error">
@@ -370,8 +393,9 @@ const WelcomeStep1 = () => {
                                             </div>
                                             <div className="w25">
                                                 <div className="form-grp-field">
-                                                    <div className="form-grp">
-                                                        <input
+                                                    <div className="form-grp sTop">
+                                                        <p className="form-label">MM</p>
+                                                        {/* <input
                                                             className="form-field"
                                                             type="number"
                                                             id="mmbirth"
@@ -379,6 +403,19 @@ const WelcomeStep1 = () => {
                                                             {...register("mmbirth", {
                                                                 required: "Date is required"
                                                             })}
+                                                        /> */}
+                                                        <DatePicker
+                                                            className="form-field"
+                                                            selected={startMonth}
+                                                            dateFormat="MM"
+                                                            autoComplete='off'
+                                                            showMonthYearPicker
+                                                            showFullMonthYearPicker
+                                                            onChange={(date) => setStartMonth(date)}
+                                                        // name="mmbirth"
+                                                        // {...register("mmbirth", {
+                                                        //     required: "Date is required"
+                                                        // })}
                                                         />
                                                         <p className="form-label">MM</p>
                                                     </div>
@@ -392,8 +429,9 @@ const WelcomeStep1 = () => {
                                             </div>
                                             <div className="w50">
                                                 <div className="form-grp-field">
-                                                    <div className="form-grp">
-                                                        <input
+                                                    <div className="form-grp sTop">
+                                                        <p className="form-label">YYYY</p>
+                                                        {/* <input
                                                             className="form-field"
                                                             type="number"
                                                             id="yybirth"
@@ -401,8 +439,19 @@ const WelcomeStep1 = () => {
                                                             {...register("yybirth", {
                                                                 required: "Year is required"
                                                             })}
+                                                        /> */}
+                                                        <DatePicker
+                                                            className="form-field"
+                                                            selected={startYear}
+                                                            dateFormat="yyyy"
+                                                            autoComplete='off'
+                                                            showYearPicker
+                                                            onChange={(date) => setStartYear(date)}
+                                                        // name="yybirth"
+                                                        // {...register("yybirth", {
+                                                        //     required: "Year is required"
+                                                        // })}
                                                         />
-                                                        <p className="form-label">YYYY</p>
                                                     </div>
                                                     {/* {errors.yybirth &&
                                                         <div className="form-input-error">

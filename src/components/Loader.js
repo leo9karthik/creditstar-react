@@ -25,6 +25,7 @@ const Loader = () => {
                     }}
                     ref={loaderAnim}
                     autoplay={true}
+                    loop={true}
                     controls={true}
                     src={animationData}
                 />

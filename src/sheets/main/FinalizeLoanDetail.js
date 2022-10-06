@@ -1,15 +1,23 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header'
 import { useForm } from "react-hook-form";
+import AuthContext from '../../store/auth-context';
+import { toast } from 'react-toastify';
+import gs from '../../service/global';
+import axios from 'axios';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const FinalizeLoanDetail = () => {
+    const authCtx = useContext(AuthContext);
+    var instanceId = authCtx?.instanceId;
+    // console.log(authCtx);
 
 
     const navigate = useNavigate();
 
+    /* react-form-hook */
     const {
         register,
         handleSubmit,
@@ -18,14 +26,73 @@ const FinalizeLoanDetail = () => {
         // mode: "onBlur",
         mode: "all",
     });
+    /* react-form-hook end */
 
 
+    /* Post data */
     const onSubmit = (data) => {
-        let payload = data;
+        let inputData = data;
+
+        let payload = {
+            "action": "submit",
+            "data": {
+                "preContractConsent": inputData?.preContractConsent,
+                "agreementConsent": inputData?.agreementConsent
+            }
+        }
         console.log(payload);
 
-        navigate("/your-all-set", { replace: true });
+
+        /* Loader Starts */
+        gs.showLoader(true);
+        /* Loader Ends */
+
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                AuthContext.currentStepFunc(result?.currentStepId);
+                console.log(result);
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
+                toast.success('Your all set', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+
+                // redirect to your-all-set
+                // navigate("/your-all-set", { replace: true });
+
+            })
+            .catch((error) => {
+                console.log(error);
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
+
     }
+    /* Post data end */
 
     return (
         <div>
@@ -41,6 +108,7 @@ const FinalizeLoanDetail = () => {
                 <div className="container">
                     {/* start */}
                     <div className="welcome-box">
+
                         <div className="welcome-right">
                             {/* start */}
                             <div className="comm-box wel-loan desktop-comp">
@@ -54,17 +122,18 @@ const FinalizeLoanDetail = () => {
                                 <div className="loan-card-det">
                                     <div className="check-list">
                                         <div className="check-lis-hdn">Amount</div>
-                                        <p className="check-amount">£2500</p>
+                                        {authCtx?.amountSlideValue && <p className="check-amount">£{authCtx?.amountSlideValue}</p>}
                                     </div>
                                     <div className="check-list">
                                         <div className="check-lis-hdn">Period</div>
-                                        <p className="check-amount">18 months</p>
+                                        {authCtx?.periodSlideValue && <p className="check-amount">{authCtx?.periodSlideValue / 30} months</p>}
                                     </div>
                                 </div>
                                 <div className="rnge-total mb0">
                                     <h6 className="rnge-total-hdn">Estimated monthly payment</h6>
-                                    <h6 className="rnge-total-price">£171.82</h6>
+                                    {authCtx?.numMonthlyPayment && <h6 className="rnge-total-price">£{authCtx?.numMonthlyPayment}</h6>}
                                 </div>
+
                             </div>
                             {/* end */}
                             {/* start */}
@@ -72,20 +141,22 @@ const FinalizeLoanDetail = () => {
                                 <div className="card-amt-flex">
                                     <div className="card-amt">
                                         <h6>Loan amount</h6>
-                                        <p>£2500</p>
+                                        {authCtx?.amountSlideValue && <p>£{authCtx?.amountSlideValue}</p>}
                                     </div>
                                     <div className="card-amt">
                                         <h6>Period</h6>
-                                        <p>18 months</p>
+                                        {authCtx?.periodSlideValue && <p>{authCtx?.periodSlideValue / 30} months</p>}
                                     </div>
                                     <div className="card-amt">
                                         <h6>Estimated payment</h6>
-                                        <p>£171.82 /mo</p>
+                                        {authCtx?.numMonthlyPayment && <h6>£{authCtx?.numMonthlyPayment} /mo</h6>}
                                     </div>
                                 </div>
                             </div>
                             {/* end */}
                         </div>
+
+
                         <div className="welcome-left">
                             {/* start */}
                             <div className="comm-box">
@@ -423,28 +494,28 @@ const FinalizeLoanDetail = () => {
                                                     </ul>
                                                 </div>
                                             </div>
+                                            {/* start */}
                                             <div className="chk-main-term">
-                                                {/* start */}
                                                 <div className="checkbox-box term-chk mb0">
                                                     <input
                                                         type="checkbox"
-                                                        id="term1"
-                                                        name="term1"
-                                                        {...register("term1", {
-                                                            required: "Key facts is required"
+                                                        id="preContractConsent"
+                                                        name="preContractConsent"
+                                                        {...register("preContractConsent", {
+                                                            required: "Precontract consent is required"
                                                         })}
                                                     />
-                                                    <label className="chk-label" htmlFor="term1">
+                                                    <label className="chk-label" htmlFor="preContractConsent">
                                                         I have read and agree to the Key Facts, which explain the details of the loan contract.
                                                     </label>
                                                 </div>
-                                                {/* end */}
                                             </div>
+                                            {/* end */}
                                         </div>
-                                        {errors.term1 &&
+                                        {errors.preContractConsent &&
                                             <div className="form-input-error">
                                                 <i className="icon-input-error"></i>
-                                                <p>{errors.term1.message}</p>
+                                                <p>{errors.preContractConsent.message}</p>
                                             </div>
                                         }
                                     </div>
@@ -457,12 +528,6 @@ const FinalizeLoanDetail = () => {
                                         </div>
                                         <div className="term-height mb0">
                                             <div className="term-box comm-scroll">
-                                                {/* <div class="term-hdn-box">
-                                                    <h6 class="term-box-hdn"></h6>
-                                                    <div class="term-box-para">
-                                                        <p></p>
-                                                    </div>
-                                                </div> */}
                                                 <div className="term-content">
                                                     <h6>
                                                         Fixed Sum Loan Agreement regulated by the Consumer Credit Act 1974
@@ -661,9 +726,10 @@ const FinalizeLoanDetail = () => {
                                                         when
                                                         you sign it electronically and we receive your signed agreement.
                                                     </p>
-                                                    <p>
-                                                        Signed by the Borrower on <date to be inserted> at <time to be inserted>
-                                                        </time></date></p>
+                                                    {/* <p>
+                                                        Signed by the Borrower on <date to be inserted></date> at <time to be inserted>
+                                                        </time>
+                                                    </p> */}
                                                     <p>
                                                         Signed by the Lender on 06/06/2022 at 14:53
                                                     </p>
@@ -1158,29 +1224,29 @@ const FinalizeLoanDetail = () => {
                                                     </p>
                                                 </div>
                                             </div>
+                                            {/* start */}
                                             <div className="chk-main-term">
-                                                {/* start */}
                                                 <div className="checkbox-box term-chk mb0">
                                                     <input
                                                         type="checkbox"
-                                                        id="term2"
-                                                        name="term2"
-                                                        {...register("term2", {
-                                                            required: "Loan conditions is required"
+                                                        id="agreementConsent"
+                                                        name="agreementConsent"
+                                                        {...register("agreementConsent", {
+                                                            required: "Agreement consent is required"
                                                         })}
                                                     />
-                                                    <label className="chk-label" htmlFor="term2">
+                                                    <label className="chk-label" htmlFor="agreementConsent">
                                                         I have read and agree to the Key Facts, which explain the details of the
                                                         loan contract.
                                                     </label>
                                                 </div>
-                                                {/* end */}
                                             </div>
+                                            {/* end */}
                                         </div>
-                                        {errors.term2 &&
+                                        {errors.agreementConsent &&
                                             <div className="form-input-error">
                                                 <i className="icon-input-error"></i>
-                                                <p>{errors.term2.message}</p>
+                                                <p>{errors.agreementConsent.message}</p>
                                             </div>
                                         }
                                     </div>
@@ -1198,6 +1264,7 @@ const FinalizeLoanDetail = () => {
                             </div>
                             {/* end */}
                         </div>
+
                     </div>
                     {/* end */}
                 </div>

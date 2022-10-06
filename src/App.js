@@ -21,7 +21,7 @@ import YourAllSet from "./sheets/main/YourAllSet";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import HomePage from "./sheets/main/HomePage";
+// import HomePage from "./sheets/main/HomePage";
 
 function App() {
 
@@ -29,8 +29,8 @@ function App() {
     <div className="App">
       <Routes>
         {/* Auth Pages starts here */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/" element={<HomePage />} /> */}
+        <Route path="/" element={<Login />} />
         <Route path="/otp-verification" element={<OtpVerification />} />
         {/* Auth Pages ends here */}
 

@@ -6,10 +6,7 @@ const Interceptor = () => {
 
 
     axios.defaults.baseURL = variables.baseURL;
-
-
-
-    console.log(variables.baseURL);
+    // console.log(variables.baseURL);
 
 
     axios.interceptors.request.use(function (config) {

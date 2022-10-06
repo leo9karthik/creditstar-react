@@ -23,6 +23,11 @@ const WelcomeStep2In1 = () => {
 
     const navigate = useNavigate();
 
+
+    const addressData = JSON.parse(localStorage.getItem('residentialAddress'));
+    console.log(addressData);
+
+
     /* react-form-hook */
     // const {
     //     register,
@@ -45,11 +50,18 @@ const WelcomeStep2In1 = () => {
     // }
 
     const residencyDataFun = () => {
-        navigate("/finances", { replace: true });
+
+
+        // navigate("/finances", { replace: true });
+    }
+
+    const backToAddress = () => {
+        navigate("/address-lookup", { replace: true });
     }
     /* Post data end */
 
     useEffect(() => {
+
 
         /* form service */
         formService.inputEmptyCheck();
@@ -120,14 +132,14 @@ const WelcomeStep2In1 = () => {
                                         {/* start */}
                                         <div className="addr-box">
                                             <div className="addr-hdn-cross">
-                                                <h6 className="addr-cont-hdn">34 Waltham Road, Bournemouth, BH7 6PF</h6>
-                                                <div className="addr-ico">
+                                                <h6 className="addr-cont-hdn">{addressData?.address}</h6>
+                                                <div className="addr-ico" onClick={() => backToAddress()}>
                                                     <i className="icon-close" />
                                                 </div>
                                             </div>
                                             <div className="addr-cont-owner">
-                                                <p className="addr-owner">Homeowner</p>
-                                                <a href="#" className="comm-link">Change</a>
+                                                <p className="addr-owner">{addressData?.residentialStatus}</p>
+                                                <a href="#!" className="comm-link" onClick={() => backToAddress()}>Change</a>
                                             </div>
                                         </div>
                                         {/* end */}

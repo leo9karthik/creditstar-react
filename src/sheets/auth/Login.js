@@ -42,10 +42,11 @@ const Login = () => {
         /* Loader Starts */
         gs.showLoader(true);
         /* Loader Ends */
-        
-        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances`, payload)
             .then((response) => {
                 const result = response?.data;
+                authCtx.createInstanceFunc(result?.id);
                 authCtx.currentStepFunc(result?.currentStepId);
                 console.log(result);
 
@@ -69,6 +70,10 @@ const Login = () => {
             .catch((error) => {
                 console.log(error);
 
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
                 toast.error('Something went wrong!', {
                     position: "top-right",
                     autoClose: 4000,
@@ -86,6 +91,7 @@ const Login = () => {
 
 
     useEffect(() => {
+        localStorage.clear();
 
         /* form service */
         formService.inputEmptyCheck();
@@ -141,7 +147,6 @@ const Login = () => {
                 {/* Side Menu End */}
             </header>
             {/* Header Ends */}
-
 
 
             {/* Main Container Starts */}

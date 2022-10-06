@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../../../components/Header'
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
@@ -7,10 +7,18 @@ import { useForm } from "react-hook-form";
 import formService from '../../../service/formService';
 import { useNavigate } from 'react-router-dom';
 import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
+import AuthContext from '../../../store/auth-context';
+import axios from 'axios';
+import gs from '../../../service/global';
+import { toast } from 'react-toastify';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const WelcomeStep4 = () => {
+  const authCtx = useContext(AuthContext);
+  var instanceId = authCtx?.instanceId;
+  // console.log(instanceId);
+
 
   /* steps */
   const [steps, setSteps] = useState(3);
@@ -23,6 +31,7 @@ const WelcomeStep4 = () => {
 
   const navigate = useNavigate();
 
+  /* react-form-hook */
   const {
     register,
     handleSubmit,
@@ -31,26 +40,99 @@ const WelcomeStep4 = () => {
     // mode: "onBlur",
     mode: "all",
   });
+  /* react-form-hook end */
 
 
+  /* Post data */
   const onSubmit = (data) => {
     let inputData = data;
-    console.log(inputData);
+    // console.log(inputData);
 
-    // let payload = {
-    //   "action": "submit",
-    //   "data": {
-    //     "employmentStatus": inputData?.postcode,
-    //     "netMonthlyIncome": "4000",
-    //     "monthlySpending": "2500",
-    //     "accountNumber": "31926819",
-    //     "sortCode": "601613"
-    //   }
-    // }
-    // console.log(payload);
+    let sortcodeData = inputData?.sccodeOne + inputData?.sccodeTwo + inputData?.sccodeThree;
 
-    navigate("/almost-done", { replace: true });
+    let payload = {
+      "action": "submit",
+      "data": {
+        "accountNumber": inputData?.account,
+        "sortCode": sortcodeData,
+        "amount": authCtx?.amountSlideValue,
+        "duration": authCtx?.periodSlideValue,
+      }
+    }
+
+    let bankdetail = {
+      key: "c9b13-fd9fb-cf970-0839a",
+      sortCode: sortcodeData,
+      accountNumber: inputData?.account,
+    }
+    axios.post(`https://api.craftyclicks.co.uk/bank/1.1/validate`, bankdetail)
+      .then((response) => {
+        const result = response;
+        console.log(result?.data);
+        bankPayload(payload);
+
+        toast.success('Successfully added bank detail', {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+      })
+      .catch((error) => {
+        console.log(error);
+
+        toast.error('Enter bank detail is invalid!', {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+      });
+
+    // navigate("/almost-done", { replace: true });
   }
+
+
+  const bankPayload = (params) => {
+    console.log(params);
+
+    /* Loader Starts */
+    gs.showLoader(true);
+    /* Loader Ends */
+
+    axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, params)
+      .then((response) => {
+        const result = response?.data;
+        authCtx.currentStepFunc(result?.currentStepId);
+        console.log(result);
+
+
+        /* Loader Starts */
+        gs.showLoader(false);
+        /* Loader Ends */
+
+
+        // redirect to Address Lookup 
+        // navigate("/almost-done", { replace: true });
+      })
+      .catch((error) => {
+        console.log(error);
+
+        /* Loader Starts */
+        gs.showLoader(false);
+        /* Loader Ends */
+
+      });
+  }
+  /* Post data end */
 
 
 
@@ -145,80 +227,69 @@ const WelcomeStep4 = () => {
                       }
                     </div>
                     {/* end */}
-                    <div className="f-row custm-frow">
-                      <div className="w33">
-                        {/* start */}
-                        <div className="form-grp-field">
-                          <div className="form-grp">
-                            <input
-                              className="form-field"
-                              type="number"
-                              id="ddcard"
-                              name="ddcard"
-                              {...register("ddcard", {
-                                required: "Date is required",
-                              })}
-                            />
-                            <p className="form-label">DD</p>
-                          </div>
-                          {errors.ddcard &&
-                            <div className="form-input-error">
-                              <i className="icon-input-error"></i>
-                              <p>{errors.ddcard.message}</p>
-                            </div>
-                          }
+                    <div className="sortcode">
+                      {/* start */}
+                      <div className="form-grp-field">
+                        <div className="form-grp">
+                          <input
+                            className="form-field"
+                            type="number"
+                            id="sccodeOne"
+                            name="sccodeOne"
+                            maxLength="2"
+                            size="2"
+                            {...register("sccodeOne", {
+                              required: true
+                            })}
+                          />
                         </div>
-                        {/* end */}
                       </div>
-                      <div className="w33">
-                        {/* start */}
-                        <div className="form-grp-field">
-                          <div className="form-grp">
-                            <input
-                              className="form-field"
-                              type="number"
-                              id="mmcard"
-                              name="mmcard"
-                              {...register("mmcard", {
-                                required: "Month is required",
-                              })}
-                            />
-                            <p className="form-label">MM</p>
-                          </div>
-                          {errors.mmcard &&
-                            <div className="form-input-error">
-                              <i className="icon-input-error"></i>
-                              <p>{errors.mmcard.message}</p>
-                            </div>
-                          }
+                      {/* end */}
+                      <div className='lineInput'>
+                        -
+                      </div>
+                      {/* start */}
+                      <div className="form-grp-field">
+                        <div className="form-grp">
+                          <input
+                            className="form-field"
+                            type="number"
+                            id="sccodeTwo"
+                            name="sccodeTwo"
+                            maxLength="2"
+                            {...register("sccodeTwo", {
+                              required: true
+                            })}
+                          />
                         </div>
-                        {/* end */}
                       </div>
-                      <div className="w33">
-                        {/* start */}
-                        <div className="form-grp-field">
-                          <div className="form-grp">
-                            <input
-                              className="form-field"
-                              type="number"
-                              id="cvcard"
-                              name="cvcard"
-                              {...register("cvcard", {
-                                required: "CV is required",
-                              })}
-                            />
-                            <p className="form-label">CV</p>
-                          </div>
-                          {errors.cvcard &&
-                            <div className="form-input-error">
-                              <i className="icon-input-error"></i>
-                              <p>{errors.cvcard.message}</p>
-                            </div>
-                          }
+                      {/* end */}
+                      <div className='lineInput'>
+                        -
+                      </div>
+                      {/* start */}
+                      <div className="form-grp-field">
+                        <div className="form-grp">
+                          <input
+                            className="form-field"
+                            type="number"
+                            id="sccodeThree"
+                            name="sccodeThree"
+                            maxLength="2"
+                            {...register("sccodeThree", {
+                              required: true
+                            })}
+                          />
                         </div>
-                        {/* end */}
                       </div>
+                      {/* end */}
                     </div>
+                    {(errors.sccodeOne || errors.sccodeTwo || errors.sccodeThree) &&
+                      <div className="form-input-error">
+                        <i className="icon-input-error"></i>
+                        <p>Sortcode is required</p>
+                      </div>
+                    }
                   </div>
                   {/* <div class="comm-disclaim">
                         <p>

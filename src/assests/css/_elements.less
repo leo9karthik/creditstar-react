@@ -765,6 +765,7 @@ button:focus {
 }
 
 .form-grp-box {
+    position: relative;
     margin-bottom: 24px;
 
     .form-grp:last-child {
@@ -875,12 +876,23 @@ button:focus {
 }
 
 .form-field:focus~.form-label,
-.form-field.field--not-empty~.form-label,
-.form-grp.sTop .form-label {
+.form-field.field--not-empty~.form-label {
     font-size: var(--label-fs-top);
     background: #fff;
     top: 0;
     z-index: 2;
+}
+
+.form-grp.sTop .form-label {
+    position: absolute;
+    font-size: var(--label-fs-top);
+    color: #aaa;
+    background: #fff;
+    top: 0;
+    transform: translateY(-50%);
+    padding: 0 4px;
+    left: 12px;
+    z-index: 3;
 }
 
 .form-textarea-group .form-field {

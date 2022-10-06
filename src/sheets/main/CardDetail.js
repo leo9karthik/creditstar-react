@@ -36,49 +36,51 @@ const CardDetail = () => {
         let payload = {
             "action": "submit",
             "data": {
-                "cardName": "John Doe",
-                "cardNumber": "4012888888881881",
-                "cardExpiry": "06/23",
-                "cardCVV": "666",
-                "preContractConsent": true,
-                "agreementConsent": true
+                "cardName": inputData?.cardname,
+                "cardNumber": inputData?.cardnumber,
+                "cardExpiry": `${inputData?.ddcard}/${inputData?.mmcard}`,
+                "cardCVV": inputData?.cardnumber,
             }
         }
-        // console.log(payload);
+        console.log(payload);
 
 
         /* Loader Starts */
-        gs.showLoader(true);
+        // gs.showLoader(true);
         /* Loader Ends */
 
-        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
-            .then((response) => {
-                const result = response?.data;
-                AuthContext.currentStepFunc(result?.currentStepId);
-                console.log(result);
+        // axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+        //     .then((response) => {
+        //         const result = response?.data;
+        //         AuthContext.currentStepFunc(result?.currentStepId);
+        //         console.log(result);
 
-                /* Loader Starts */
-                gs.showLoader(false);
-                /* Loader Ends */
+        //         /* Loader Starts */
+        //         gs.showLoader(false);
+        //         /* Loader Ends */
 
-                // redirect to finalize
-                navigate("/finalize-loan-detail", { replace: true });
+        //         // redirect to finalize
+        //         navigate("/finalize-loan-detail", { replace: true });
 
-            })
-            .catch((error) => {
-                console.log(error);
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
 
-                toast.error('Something went wrong!', {
-                    position: "top-right",
-                    autoClose: 4000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+        //         /* Loader Starts */
+        //         gs.showLoader(false);
+        //         /* Loader Ends */
 
-            });
+        //         toast.error('Something went wrong!', {
+        //             position: "top-right",
+        //             autoClose: 4000,
+        //             hideProgressBar: false,
+        //             closeOnClick: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             progress: undefined,
+        //         });
+
+        //     });
 
     }
     /* Post data end */
@@ -117,20 +119,22 @@ const CardDetail = () => {
                                     </h3>
                                     {/* <a href="#" class="comm-link">Change</a> */}
                                 </div>
+
                                 <div className="loan-card-det">
                                     <div className="check-list">
                                         <div className="check-lis-hdn">Amount</div>
-                                        <p className="check-amount">£2500</p>
+                                        {authCtx?.amountSlideValue && <p className="check-amount">£{authCtx?.amountSlideValue}</p>}
                                     </div>
                                     <div className="check-list">
                                         <div className="check-lis-hdn">Period</div>
-                                        <p className="check-amount">18 months</p>
+                                        {authCtx?.periodSlideValue && <p className="check-amount">{authCtx?.periodSlideValue / 30} months</p>}
                                     </div>
                                 </div>
                                 <div className="rnge-total mb0">
                                     <h6 className="rnge-total-hdn">Estimated monthly payment</h6>
-                                    <h6 className="rnge-total-price">£171.82</h6>
+                                    {authCtx?.numMonthlyPayment && <h6 className="rnge-total-price">£{authCtx?.numMonthlyPayment}</h6>}
                                 </div>
+
                             </div>
                             {/* end */}
                             {/* start */}
@@ -138,15 +142,15 @@ const CardDetail = () => {
                                 <div className="card-amt-flex">
                                     <div className="card-amt">
                                         <h6>Loan amount</h6>
-                                        <p>£2500</p>
+                                        {authCtx?.amountSlideValue && <p>£{authCtx?.amountSlideValue}</p>}
                                     </div>
                                     <div className="card-amt">
                                         <h6>Period</h6>
-                                        <p>18 months</p>
+                                        {authCtx?.periodSlideValue && <p>{authCtx?.periodSlideValue / 30} months</p>}
                                     </div>
                                     <div className="card-amt">
                                         <h6>Estimated payment</h6>
-                                        <p>£171.82 /mo</p>
+                                        {authCtx?.numMonthlyPayment && <h6>£{authCtx?.numMonthlyPayment} /mo</h6>}
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +201,7 @@ const CardDetail = () => {
                                                 <div className="form-grp">
                                                     <input
                                                         className="form-field"
-                                                        type="text"
+                                                        type="number"
                                                         id="cardnumber"
                                                         name="cardnumber"
                                                         {...register("cardnumber", {
@@ -221,7 +225,7 @@ const CardDetail = () => {
                                                     <div className="form-grp">
                                                         <input
                                                             className="form-field"
-                                                            type="text"
+                                                            type="number"
                                                             id="ddcard"
                                                             name="ddcard"
                                                             {...register("ddcard", {
@@ -245,7 +249,7 @@ const CardDetail = () => {
                                                     <div className="form-grp">
                                                         <input
                                                             className="form-field"
-                                                            type="text"
+                                                            type="number"
                                                             id="mmcard"
                                                             name="mmcard"
                                                             {...register("mmcard", {
@@ -269,7 +273,7 @@ const CardDetail = () => {
                                                     <div className="form-grp">
                                                         <input
                                                             className="form-field"
-                                                            type="text"
+                                                            type="number"
                                                             id="cvvcard"
                                                             name="cvvcard"
                                                             {...register("cvvcard", {

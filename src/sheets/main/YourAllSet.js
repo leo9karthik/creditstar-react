@@ -100,14 +100,14 @@ const YourAllSet = () => {
                             {/* start */}
                             <div className="checkout-list-box">
                                 <div className="repay-link mob-comp">
-                                    <a href="javascript:void(0)" className="comm-link" onClick={() => toggleLoanCal()}>
+                                    <a href="#!" className="comm-link" onClick={() => toggleLoanCal()}>
                                         {!showLoanCal ? 'Repayment schedule' : 'Close'}
                                     </a>
                                 </div>
                                 <div className={!showLoanCal ? 'repayment-list' : ''}>
                                     <div className="check-list check-list-head">
                                         <h6 className="form-quest">Repayment schedule</h6>
-                                        <a href="#" className="comm-link2">See all</a>
+                                        <a href="#!" className="comm-link2">See all</a>
                                     </div>
                                     <div className="repay-list">
                                         <div className="check-list">

@@ -6,6 +6,7 @@ import axios from 'axios';
 import AuthContext from '../../store/auth-context';
 import gs from '../../service/global';
 import { toast } from 'react-toastify';
+import PaymentCalculationComp from '../../components/PaymentCalculationComp';
 
 const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
@@ -13,8 +14,15 @@ const Congratulations = () => {
     const authCtx = useContext(AuthContext);
     var instanceId = authCtx?.instanceId;
 
+
+    // setTimeout(() => {
+    // console.log(authCtx);
+    // }, 1000);
+
     /* usestate */
     const [showLoanCal, setShowLoanCal] = useState(false);
+
+
     /* usestate end */
 
     const navigate = useNavigate();
@@ -64,6 +72,10 @@ const Congratulations = () => {
         //     })
         //     .catch((error) => {
         //         console.log(error);
+
+        // /* Loader Starts */
+        // gs.showLoader(false);
+        // /* Loader Ends */
 
         //         toast.error('Something went wrong!', {
         //             position: "top-right",
@@ -121,68 +133,38 @@ const Congratulations = () => {
                             <div className="checkout-list-box">
                                 <div className="check-list check-list-head">
                                     <div className="check-lis-hdn">Loan details</div>
-                                    <a href="javascript:void(0)" className="comm-link" onClick={() => toggleLoanCal()}>
+                                    <a href="#!" className="comm-link" onClick={() => toggleLoanCal()}>
                                         {!showLoanCal ? 'Change' : 'Save'}
                                     </a>
                                 </div>
 
                                 <div className={!showLoanCal ? 'dnone' : ''}>
-                                    <div className="rnge-slide-box">
-                                        <div className="rnge-slide">
-                                            <div className="rnge-top">
-                                                <h6 className="rnge-hdn">Amount</h6>
-                                                <div className="form-grp amt-slider">
-                                                    <input className="form-field" type="text" id="amount" name="amount" defaultValue="£2500" />
-                                                    {/* <p class="form-label">First Name</p> */}
-                                                </div>
-                                            </div>
-                                            <div className="drag-slide">
-                                                <img src="./img/drag-slide-big.png" alt="" />
-                                            </div>
-                                            <div className="rnge-btm">
-                                                <p>£500</p>
-                                                <p>£5000</p>
-                                            </div>
-                                        </div>
-                                        <div className="rnge-slide">
-                                            <div className="rnge-top">
-                                                <h6 className="rnge-hdn">Period</h6>
-                                                <div className="form-grp amt-slider">
-                                                    <input className="form-field" type="text" id="amount" name="amount" defaultValue={10} />
-                                                    {/* <p class="form-label">First Name</p> */}
-                                                </div>
-                                            </div>
-                                            <div className="drag-slide">
-                                                <img src="./img/drag-slide-big.png" alt="" />
-                                            </div>
-                                            <div className="rnge-btm">
-                                                <p>6 months</p>
-                                                <p>18 months</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <PaymentCalculationComp />
                                 </div>
+
 
                                 <div className="check-list">
                                     <div className="check-lis-hdn">Amount</div>
-                                    <p className="check-amount">£2500</p>
+                                    <p className="check-amount">£{authCtx?.amountSlideValue}</p>
                                 </div>
                                 <div className="check-list">
                                     <div className="check-lis-hdn">Period</div>
-                                    <p className="check-amount">18 months</p>
+                                    <p className="check-amount">{authCtx?.periodSlideValue / 30} months</p>
                                 </div>
                                 <div className="check-list">
                                     <div className="check-lis-hdn">Monthly payment</div>
-                                    <p className="check-amount">£171.82</p>
+                                    <p className="check-amount">£{authCtx?.numMonthlyPayment}</p>
                                 </div>
                                 <div className="check-list">
                                     <div className="check-lis-hdn">Rate (APR)</div>
-                                    <p className="check-amount">23.8%</p>
+                                    <p className="check-amount">{authCtx?.totalInterest}%</p>
                                 </div>
                                 <div className="check-list">
                                     <div className="check-lis-hdn">Total repayable</div>
-                                    <p className="check-amount">£3092.76</p>
+                                    <p className="check-amount">£{authCtx?.totalAmountWithInt}</p>
                                 </div>
+
+
                             </div>
                             {/* end */}
                             {/* start */}

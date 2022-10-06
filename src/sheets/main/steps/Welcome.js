@@ -1,13 +1,21 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import Header from '../../../components/Header'
 import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
+import AuthContext from '../../../store/auth-context';
+import axios from 'axios';
+import gs from '../../../service/global';
+import { toast } from 'react-toastify';
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
 const Welcome = () => {
+    const authCtx = useContext(AuthContext);
+    console.log("welcomejs:", authCtx);
+    var instanceId = authCtx?.instanceId;
     const navigate = useNavigate();
+    // console.log(authCtx?.amountSlideValue,authCtx?.periodSlideValue);
 
     /* react-form-hook */
     const {
@@ -20,15 +28,85 @@ const Welcome = () => {
     });
     /* react-form-hook end */
 
+    /* usestate */
+    const [welcomeRadio, setWelcomeRadio] = useState('homeImprovement');
+    const [termRadio, setTermRadio] = useState(false);
+    /* usestate end */
+
     /* Post data */
-    const onSubmit = (data) => {
-        let payload = data;
+    const onSubmit = () => {
+        // console.log(data);
+
+        let payload = {
+            "action": "submit",
+            "data": {
+                "loanPurpose": welcomeRadio,
+                "termsAndPrivacyConsent": termRadio,
+                "amount": authCtx?.amountSlideValue,
+                "duration": authCtx?.periodSlideValue,
+            }
+        }
         console.log(payload);
 
-        // redirect to Basic Info
-        navigate("/basic-info", { replace: true });
+
+        /* Loader Starts */
+        gs.showLoader(true);
+        /* Loader Ends */
+
+
+        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+            .then((response) => {
+                const result = response?.data;
+                authCtx.currentStepFunc(result?.currentStepId);
+                console.log(result);
+
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
+
+                // redirect to Basic Info
+                navigate("/basic-info", { replace: true });
+            })
+            .catch((error) => {
+                console.log(error);
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
+                toast.error('Something went wrong!', {
+                    position: "top-right",
+                    autoClose: 4000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+            });
+
+
+
     }
     /* Post data end */
+
+
+
+    /* get radio */
+    const welcomeRadioFun = (value) => {
+        console.log(value);
+        setWelcomeRadio(value);
+    }
+
+    const termRadioFun = (value) => {
+        console.log(value);
+        setTermRadio(value);
+    }
+    /* get radio end */
+
 
 
 
@@ -71,9 +149,11 @@ const Welcome = () => {
                                         <div className="checkbox-box check-three">
                                             <input
                                                 type="checkbox"
+                                                name="welcomeRadio"
                                                 id="homeImprovement"
-                                                name="checkbox-welcome[]"
-                                                {...register("homeImprovement")}
+                                                value="homeImprovement"
+                                                defaultChecked={welcomeRadio === 'homeImprovement'}
+                                                onClick={(e) => welcomeRadioFun(e.target.value)}
                                             />
                                             <label className="chk-label" htmlFor="homeImprovement">
                                                 <span> Home improvement </span>
@@ -84,9 +164,11 @@ const Welcome = () => {
                                         <div className="checkbox-box check-three">
                                             <input
                                                 type="checkbox"
+                                                name="welcomeRadio"
                                                 id="car"
-                                                name="checkbox-welcome[]"
-                                                {...register("car")}
+                                                value="car"
+                                                defaultChecked={welcomeRadio === 'car'}
+                                                onClick={(e) => welcomeRadioFun(e.target.value)}
                                             />
                                             <label className="chk-label" htmlFor="car">
                                                 <span> Car </span>
@@ -97,9 +179,11 @@ const Welcome = () => {
                                         <div className="checkbox-box check-three">
                                             <input
                                                 type="checkbox"
+                                                name="welcomeRadio"
                                                 id="debtConsolidation"
-                                                name="checkbox-welcome[]"
-                                                {...register("debtConsolidation")}
+                                                value="debtConsolidation"
+                                                defaultChecked={welcomeRadio === 'debtConsolidation'}
+                                                onClick={(e) => welcomeRadioFun(e.target.value)}
                                             />
                                             <label className="chk-label" htmlFor="debtConsolidation">
                                                 <span> Debt consolidation </span>
@@ -110,9 +194,11 @@ const Welcome = () => {
                                         <div className="checkbox-box check-three">
                                             <input
                                                 type="checkbox"
+                                                name="welcomeRadio"
                                                 id="other"
-                                                name="checkbox-welcome[]"
-                                                {...register("other")}
+                                                value="other"
+                                                defaultChecked={welcomeRadio === 'other'}
+                                                onClick={(e) => welcomeRadioFun(e.target.value)}
                                             />
                                             <label className="chk-label" htmlFor="other">
                                                 <span> Other </span>
@@ -121,8 +207,14 @@ const Welcome = () => {
                                         {/* end */}
                                     </div>
                                     <div className="checkbox-box term-chk wel-chk">
-                                        <input type="checkbox" id="term1" name="term1" required />
-                                        <label className="chk-label" htmlFor="term1">
+                                        <input type="checkbox"
+                                            name="termRadio"
+                                            id="term"
+                                            // value={termRadio}
+                                            defaultChecked={termRadio}
+                                            onClick={(e) => termRadioFun(e.target.checked)}
+                                        />
+                                        <label className="chk-label" htmlFor="term">
                                             I have read and agree with the
                                             <a href="#">terms & privacy</a>
                                             and to receive Credistar updates and offers.

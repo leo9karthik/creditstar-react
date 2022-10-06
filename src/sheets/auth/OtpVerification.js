@@ -5,6 +5,7 @@ import formService from '../../service/formService';
 import AuthContext from '../../store/auth-context';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import gs from '../../service/global';
 
 const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
 
@@ -46,6 +47,10 @@ const OtpVerification = () => {
             .catch((error) => {
                 console.log(error);
 
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
                 toast.error('Something went wrong!', {
                     position: "top-right",
                     autoClose: 4000,
@@ -80,6 +85,10 @@ const OtpVerification = () => {
             .catch((error) => {
                 console.log(error);
 
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
+
                 toast.error('Something went wrong!', {
                     position: "top-right",
                     autoClose: 4000,
@@ -108,6 +117,10 @@ const OtpVerification = () => {
         }
         console.log(payload);
 
+        /* Loader Starts */
+        gs.showLoader(true);
+        /* Loader Ends */
+
 
 
         axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
@@ -117,6 +130,15 @@ const OtpVerification = () => {
                 console.log(result);
 
 
+                // localStorage.setItem('amount', 500);
+                // localStorage.setItem('period', 180);
+                // localStorage.setItem('monthlyPayment', 113.33);
+
+
+
+
+                /* Loader Starts */
+                gs.showLoader(false);
                 toast.success('OTP verified successfully.', {
                     position: "top-right",
                     autoClose: 4000,
@@ -126,14 +148,18 @@ const OtpVerification = () => {
                     draggable: true,
                     progress: undefined,
                 });
+                /* Loader Ends */
 
 
                 // redirect to Welcome
-                // navigate("/welcome", { replace: true });
-                navigate("/basic-info", { replace: true });
+                navigate("/welcome", { replace: true });
             })
             .catch((error) => {
                 console.log(error);
+
+                /* Loader Starts */
+                gs.showLoader(false);
+                /* Loader Ends */
 
                 toast.error('Something went wrong!', {
                     position: "top-right",
@@ -235,7 +261,7 @@ const OtpVerification = () => {
                                 </h2>
                                 <div className="auth-para">
                                     <p>We have sent a code to
-                                        <i><span>07554446921</span>. <a href="javascript:void(0)" onClick={() => changeNumber()}> Change</a></i>
+                                        <i><span>07554446921</span>. <a href="#!" onClick={() => changeNumber()}> Change</a></i>
                                     </p>
                                 </div>
                             </div>
