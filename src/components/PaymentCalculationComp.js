@@ -267,7 +267,7 @@ const PaymentCalculationComp = ({ getAmount, getDuration, getMonthly }) => {
                 getMonthly &&
                 <div className="rnge-total">
                     <h6 className="rnge-total-hdn">Estimated monthly payment</h6>
-                    <h6 className="rnge-total-price">£{(authCtx?.numMonthlyPayment).toFixed(2)}</h6>
+                    <h6 className="rnge-total-price">£{authCtx?.numMonthlyPayment}</h6>
                 </div>
             }
         </>
