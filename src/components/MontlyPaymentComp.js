@@ -47,7 +47,7 @@ const MontlyPaymentComp = () => {
                 <div className="wel-cont-box">
                     <div className="wel-mont-pay">
                         <h5 className="wel-hdn">Monthly payment</h5>
-                        <h6 className="wel-pay-val">£{authCtx?.numMonthlyPayment}</h6>
+                        <h6 className="wel-pay-val">£{parseFloat(authCtx?.numMonthlyPayment.toFixed(2))}</h6>
                     </div>
                     <div className="wel-flex">
                         {/* start */}
