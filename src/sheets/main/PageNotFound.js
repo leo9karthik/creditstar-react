@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 /* component */
 import Header from '../../components/Header';
 import InnerBgComp from '../../components/InnerBgComp';
-import { Link } from 'react-router-dom';
 /* component end */
 
 const { REACT_APP_PUBLIC_URL } = process.env;
@@ -56,8 +55,6 @@ const PageNotFound = () => {
                 className="congo-para">
                 <p>The page your’re looking for <br /> could not be found</p>
               </motion.div>
-
-              <Link to="/login">Test</Link>
             </div>
 
 
