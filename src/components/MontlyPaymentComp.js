@@ -1,53 +1,40 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
+
+/* plugin */
+import { motion } from "framer-motion";
+/* plugin end */
+
+/* service */
 import AuthContext from '../store/auth-context';
+/* service end */
+
+/* component */
 import LoanCalComp from './LoanCalComp';
+/* component end */
 
 const { REACT_APP_PUBLIC_URL } = process.env;
 
 const MontlyPaymentComp = () => {
     const authCtx = useContext(AuthContext);
-
-    // const numIntialAmount = localStorage.getItem('amount');
-    // const numIntialPeriod = localStorage.getItem('period');
-    // const intialMonthlyPayment = localStorage.getItem('monthlyPayment');
-
-
-    // let daysToMonths = numIntialPeriod / 30;
-    // // console.log(intialAmount, intialPeriod);
-
-
-    // const [amountData, setAmountData] = useState(numIntialAmount)
-    // const [durationData, setDurationData] = useState(daysToMonths)
-    // const [monthlyData, setMonthlyData] = useState(intialMonthlyPayment)
-
-    // /* our call back function */
-    // const getAmount = (value) => {
-    //     // console.log(value);
-    //     setAmountData(value);
-    // }
-
-    // const getDuration = (value) => {
-    //     // console.log(value);
-    //     setDurationData(value);
-    // }
-
-    // const getMonthly = (value) => {
-    //     // console.log(value);
-    //     setMonthlyData(value);
-    // }
-    // /* our call back function end */
+    // console.log("montly payment authCtx", authCtx);
 
 
     return (
         <>
-            <div className="welcome-pay">
+            <motion.div
+                initial={{ y: 60, scale: 0.9, opacity: 0 }}
+                animate={{ y: 0, scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="welcome-pay">
                 <div className="wel-img">
                     <img src={`${REACT_APP_PUBLIC_URL}/img/payment-bg.png`} alt="" />
                 </div>
                 <div className="wel-cont-box">
                     <div className="wel-mont-pay">
                         <h5 className="wel-hdn">Monthly payment</h5>
-                        <h6 className="wel-pay-val">£{parseFloat(authCtx?.numMonthlyPayment.toFixed(2))}</h6>
+                        {authCtx?.paymentData?.installmentAmount &&
+                            <h6 className="wel-pay-val">£{Number(authCtx?.paymentData?.installmentAmount).toFixed(2)}</h6>
+                        }
                     </div>
                     <div className="wel-flex">
                         {/* start */}
@@ -74,7 +61,7 @@ const MontlyPaymentComp = () => {
                         {/* end */}
                     </div>
                 </div>
-            </div>
+            </motion.div>
             <LoanCalComp
                 // getAmount={getAmount} 
                 // getDuration={getDuration} 

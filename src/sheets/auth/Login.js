@@ -1,224 +1,218 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate } from "react-router-dom";
-import formService from '../../service/formService';
-import { useForm } from "react-hook-form";
-import AuthContext from '../../store/auth-context';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import gs from '../../service/global';
+import React, { useContext, useEffect } from "react";
 
-const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
+/* plugin */
+import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import axios from "axios";
+/* plugin end */
+
+/* service */
+import AuthContext from "../../store/auth-context";
+import gs from "../../service/global";
+import { stepFun, toasterConfig } from "../../config/Constant";
+import formService from "../../service/formService";
+/* service end */
+
+/* component */
+import ErrorMsgComp from "../../components/ErrorMsgComp";
+import AuthHeader from "../../components/AuthHeader";
+import InnerBgComp from "../../components/InnerBgComp";
+import AuthHeadingComp from "../../components/AuthHeadingComp";
+/* component end */
+
+const { REACT_APP_FLOWID } = process.env;
 
 const Login = () => {
-    const authCtx = useContext(AuthContext);
-    var instanceId = authCtx?.instanceId;
-    console.log(instanceId);
+  const authCtx = useContext(AuthContext);
+  // const instanceId = authCtx?.instanceId;
+  // console.log(instanceId);
+  let { instanceParamsId } = useParams();
+  // console.log(instanceParamsId);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm({
-        // mode: "onBlur",
-        mode: "all",
-    });
+  /* get mobile data */
+  const getMobileData = localStorage.getItem("mobileData");
+  const parseData = JSON.parse(getMobileData);
+  /* get mobile data end */
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    // mode: "onBlur",
+    mode: "all",
+  });
 
-    const onSubmit = (data) => {
-        let inputData = data;
-        // console.log(inputData?.mobilenumber);
+  const onSubmit = (data) => {
+    let inputData = data;
+    // console.log(inputData?.mobilenumber);
 
-        let payload = {
-            "action": "submit",
-            "data": {
-                "phoneNumber": inputData?.mobilenumber
-            }
-        }
-        console.log(payload);
+    let payload = {
+      action: "submit",
+      data: {
+        phoneNumber: inputData?.mobilenumber,
+      },
+    };
+    // console.log(payload);
+
+    /* Loader Starts */
+    gs.showLoader(true);
+    /* Loader Ends */
+
+    axios
+      .post(`/flow/${REACT_APP_FLOWID}/instances/${instanceParamsId}`, payload)
+      .then((response) => {
+
+        const result = response?.data;
+        authCtx.createInstanceFunc(result?.id);
+        authCtx.prefilledDataFunc(result?.prefilledData);
+        const otpCode = result?.responseData?.otpCode;
+        const currentStep = result?.currentStepId;
+        // console.log(result);
+
+        let data = {
+          phoneNumber: inputData?.mobilenumber,
+          otpCode,
+        };
+        localStorage.setItem("mobileData", JSON.stringify(data));
+        // console.log(data);
 
         /* Loader Starts */
-        gs.showLoader(true);
+        gs.showLoader(false);
+        toast.success(
+          "Verification code sent! It will arrive shortly.",
+          toasterConfig
+        );
         /* Loader Ends */
 
-        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances`, payload)
-            .then((response) => {
-                const result = response?.data;
-                authCtx.createInstanceFunc(result?.id);
-                authCtx.currentStepFunc(result?.currentStepId);
-                console.log(result);
+        navigate(stepFun(instanceParamsId)[currentStep], { replace: true });
+      })
+      .catch((error) => {
+        const errorStep = error?.response?.data?.currentStepId;
+        navigate(stepFun(instanceParamsId)[errorStep], { replace: true });
 
+        const serverError = error?.message;
+        // console.log(serverError);
 
-                /* Loader Starts */
-                gs.showLoader(false);
-                toast.success('OTP send to your registered number.', {
-                    position: "top-right",
-                    autoClose: 4000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                /* Loader Ends */
+        /* Loader Starts */
+        gs.showLoader(false);
+        /* Loader Ends */
 
-                // redirect to OTP Verification
-                navigate("/otp-verification", { replace: true });
-            })
-            .catch((error) => {
-                console.log(error);
+        if (serverError) {
+          // console.log(itemData);
 
-                /* Loader Starts */
-                gs.showLoader(false);
-                /* Loader Ends */
+          toast.error(serverError, toasterConfig);
+        }
 
-                toast.error('Something went wrong!', {
-                    position: "top-right",
-                    autoClose: 4000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+        const errorResult = error?.response?.data?.errors;
+        const arrayOfString = Object.values(errorResult);
+        const arrayFlatten = arrayOfString.flat();
 
-            });
+        for (let itemData of arrayFlatten) {
+          // console.log(itemData);
 
+          toast.error(itemData, toasterConfig);
+        }
+      });
+  };
 
-    }
+  useEffect(() => {
+    // console.log("Current Step Removed");
+    localStorage.clear();
 
+    /* form service */
+    formService.inputEmptyCheck();
+    /* form service end */
 
-    useEffect(() => {
-        localStorage.clear();
+    authCtx.createInstanceFunc(instanceParamsId);
+  }, []);
 
-        /* form service */
-        formService.inputEmptyCheck();
-        /* form service end */
-    }, [])
+  return (
+    <div>
+      {/* Header Starts */}
+      <AuthHeader />
+      {/* Header Ends */}
 
+      {/* Main Container Starts */}
+      <div className="main-container">
+        <InnerBgComp bgImg={true} />
 
-    return (
-        <div>
+        {/* start */}
+        <div className="comm-rev">
+          <div className="container">
 
-            {/* Header Starts */}
-            <header id="header">
-                <div className="header-box">
-                    <div className="head-container">
-                        <div className="head-left">
-                            <div className="logoBox">
-                                <div className="logo">
-                                    <picture>
-                                        <source media="(max-width:990px)" srcSet={`${REACT_APP_PUBLIC_URL}/img/logo.svg`} />
-                                        <img src={`${REACT_APP_PUBLIC_URL}/img/logo-white.svg`} alt="logo" />
-                                        <img className="scroll-logo" src={`${REACT_APP_PUBLIC_URL}/img/logo.svg`} alt="logo" />
-                                    </picture>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="head-right">
-                            <ul className="header-list">
-                                {/* <li><a href="#">Already have an account?</a></li> */}
-                            </ul>
-                            <div className="menuBtn">
-                                <a href="#" className="button butn-blue">Log in</a>
-                                <div className="menu side-menu"><img src={`${REACT_APP_PUBLIC_URL}/img/menu.svg`} alt="Menu" /></div>
-                            </div>
-                        </div>
-                    </div>
+            {/* heading component */}
+            <AuthHeadingComp />
+            {/* heading component end */}
+
+            {/* form */}
+            <motion.div
+              initial={{ y: 60, scale: 0.8, opacity: 0 }}
+              animate={{ y: 0, scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="form-box"
+            >
+              <div className="info-txt">
+                <i className="icon-info info-ico" />
+                <p>This won’t affect your credit score</p>
+              </div>
+              <div className="auth-hdn-box">
+                <h2 className="auth-hdn">Your mobile number</h2>
+                <div className="auth-para">
+                  <p>We will send verification code on this number.</p>
                 </div>
-                {/* Side Menu */}
-                <div className="menuOverlay" />
-                <div className="mobile-menu">
-                    <h3 className="close-menu">
-                        <img src="" alt="cancel" />
-                    </h3>
-                    <ul className="header-list">
-                        <li><a href="#">Already have an account?</a></li>
-                    </ul>
-                    <div className="mob-menu-footer">
-                        <div className="footerIcon-section">
-                            <img src={`${REACT_APP_PUBLIC_URL}/img/logo-white.svg`} alt="Company Head Office Contact Number" />
-                        </div>
-                        {/* <a className="mob-menu-footer--num" href="#" /> */}
-                    </div>
+              </div>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="form-grp-field">
+                  <div className="form-grp">
+                    <input
+                      className="form-field"
+                      type="number"
+                      onWheel={(e) => e.target.blur()}
+                      id="mobilenumber"
+                      name="mobilenumber"
+                      defaultValue={parseData?.phoneNumber || ""}
+                      autoComplete="off"
+                      {...register("mobilenumber", {
+                        required: "Mobile Number is required.",
+                        pattern: {
+                          value: /^07\d{9}$/,
+                          message: "Phone Number must start with 07.",
+                        },
+                        minLength: {
+                          value: 11,
+                          message: "Phone Number must consist of 11 digits.",
+                        },
+                        maxLength: {
+                          value: 11,
+                          message: "Phone Number must consist of 11 digits.",
+                        },
+                      })}
+                    />
+                    <p className="form-label">UK mobile number</p>
+                  </div>
+                  {/* {errors.mobilenumber && <p className="error-msg">{errors.mobilenumber.message}</p>} */}
+                  {errors.mobilenumber && (
+                    <ErrorMsgComp errorMessage={errors.mobilenumber.message} />
+                  )}
                 </div>
-                {/* Side Menu End */}
-            </header>
-            {/* Header Ends */}
+                <button className="button button--block" type="submit">
+                  <span>Send code</span>
+                </button>
+              </form>
+            </motion.div>
+            {/* form end */}
+          </div>
+        </div>
+        {/* end */}
+      </div>
+      {/* Main Container Ends */}
+    </div>
+  );
+};
 
-
-            {/* Main Container Starts */}
-            <div className="main-container">
-                <div className="banner-top-img" style={{ backgroundImage: `url('${REACT_APP_PUBLIC_URL}/img/home-banner-img.png')` }}>
-                    {/* <img src="./img/home-banner-img.png" alt=""> */}
-                </div>
-                {/* start */}
-                <div className="comm-rev">
-                    <div className="container">
-                        <div className="banner-box">
-                            <h2 className="banner-hdn">Get a loan online,<br /> in 2 minutes!</h2>
-                            <div className="banner-para">
-                                <p>Applying for a Creditstar loan is fast, secure, and reliable.</p>
-                            </div>
-                        </div>
-                        {/* form */}
-                        <div className="form-box">
-                            <div className="info-txt">
-                                <i className="icon-info info-ico" />
-                                <p>This won’t affect your credit score</p>
-                            </div>
-                            <div className="auth-hdn-box">
-                                <h2 className="auth-hdn">
-                                    Your mobile number
-                                </h2>
-                                <div className="auth-para">
-                                    <p>By signing up, you will get a verification code.</p>
-                                </div>
-                            </div>
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                <div className="form-grp-field">
-                                    <div className="form-grp">
-                                        <input
-                                            className="form-field"
-                                            type="number"
-                                            id="mobilenumber"
-                                            name="mobilenumber"
-                                            defaultValue={53720000}
-                                            autoComplete="off"
-                                            {...register("mobilenumber", {
-                                                required: "Mobile Number is required",
-                                                pattern: {
-                                                    value: /^[0-9]*$/,
-                                                    message: "Enter a valid Mobile Number"
-                                                }
-                                            })}
-                                        />
-                                        <p className="form-label">UK mobile number</p>
-                                    </div>
-                                    {/* {errors.mobilenumber && <p className="error-msg">{errors.mobilenumber.message}</p>} */}
-                                    {errors.mobilenumber &&
-                                        <div className="form-input-error">
-                                            <i className="icon-input-error"></i>
-                                            <p>{errors.mobilenumber.message}</p>
-                                        </div>
-                                    }
-
-                                </div>
-                                <button className="button button--block" type="submit"><span>Send code</span></button>
-                            </form>
-                        </div>
-                        {/* form end */}
-                    </div>
-                </div>
-                {/* end */}
-            </div>
-            {/* Main Container Ends */}
-
-        </div >
-
-    )
-}
-
-export default Login
+export default Login;

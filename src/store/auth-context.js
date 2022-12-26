@@ -1,28 +1,35 @@
 import React, { useState } from 'react';
-import { useEffect } from 'react';
+
 const AuthContext = React.createContext({
     instanceId: '',
     currentStep: '',
+    prefilledData: {},
     createInstanceFunc: () => { },
-    currentStepFunc: () => { },
-
+    prefilledDataFunc: () => { },
 
 
     amountSlideValue: null,
     periodSlideValue: null,
+    periodSlideValueMonth: null,
 
     numMonthlyPayment: null,
     totalInterest: null,
     totalAmountWithInt: null,
 
+    paymentData: null,
+    productUrl: null,
+
+    offerData: null,
+
     createAmountValueFunc: () => { },
     createPeriodValueFunc: () => { },
+    paymentDataFunc: () => { },
+    productUrlFunc: () => { },
 
-    // token: '',
-    // isLoggedIn: false,
-    // passwordChanged: (isChanged) => { },
-    // login: (token) => { },
-    // logout: () => { }
+    offerDataFunc: () => { },
+
+    logoutFunc: () => { }
+
 });
 
 export default AuthContext
@@ -30,153 +37,123 @@ export default AuthContext
 
 
 export const AuthContextProvider = (props) => {
-    const initialInstances = localStorage.getItem('instances-id');
-    const intialCurrentStep = localStorage.getItem('current-step');
+    const initialInstances = localStorage.getItem('instancesId');
+    const intialPrefilledData = JSON.parse(localStorage.getItem('prefilledData'));
 
     const [instanceId, setInstanceId] = useState(initialInstances);
-    const [currentStep, setCurrentStep] = useState(intialCurrentStep);
+    const [prefilledData, setPrefilledData] = useState(intialPrefilledData);
 
     const instanceIdHandler = (id) => {
         setInstanceId(id);
         // console.log("context CTX :", id);
-        localStorage.setItem('instances-id', id)
+        localStorage.setItem('instancesId', id)
     }
 
-    const currentStepHandler = (step) => {
-        setCurrentStep(step);
-        // console.log("context CTX :", id);
-        localStorage.setItem('current-step', step)
+    const prefilledDataHandler = (value) => {
+        setPrefilledData(value);
+        // console.log("context CTX :", value);
+        localStorage.setItem('prefilledData', JSON.stringify(value));
     }
-
-
-
 
 
     /* monthly calculation */
-    const initialAmount = localStorage.getItem('amount') || 1000;
-    const intialPeriod = localStorage.getItem('period') || 8;
+    const initialAmount = parseFloat(localStorage.getItem('amount')) || 1000;
+    const intialPeriod = parseFloat(localStorage.getItem('period')) || 8;
+    const intialPeriodMonth = parseFloat(localStorage.getItem('periodMonth')) || 180;
+
     const [amountValue, setAmountValue] = useState(initialAmount);
     const [periodValue, setPeriodValue] = useState(intialPeriod);
-    const [paymentData, setPaymentData] = useState({});
+    const [periodValueInMonth, setPeriodValueInMonth] = useState(intialPeriodMonth);
 
+
+    const intialPaymentData = JSON.parse(localStorage.getItem('paymentData')) || {};
+    const [paymentData, setPaymentData] = useState(intialPaymentData);
+
+
+    const [productUrlCtx, setProductUrlCtx] = useState(null);
+
+
+    const intialOfferData = JSON.parse(localStorage.getItem('offerData')) || {};
+    const [offerDataValue, setOfferDataValue] = useState(intialOfferData);
 
     const amountSlideValueHandler = (value) => {
-        console.log(value);
+        // console.log(value);
 
         setAmountValue(value);
         localStorage.setItem('amount', value);
     }
 
     const periodSlideValueHandler = (value) => {
-        console.log(value);
+        // console.log(value);
+        let periodMonth = value * 30;
 
+        setPeriodValueInMonth(periodMonth);
         setPeriodValue(value);
         localStorage.setItem('period', value);
+        localStorage.setItem('periodMonth', periodMonth);
     }
 
+    const paymentDataHandler = (value) => {
+        // console.log(value);
+        localStorage.setItem('paymentData', JSON.stringify(value));
+        setPaymentData(value);
+    }
 
-    // useEffect(() => {
-    //     const initialAmount = localStorage.getItem('amount');
-    //     const intialPeriod = localStorage.getItem('period');
+    const productUrlHandler = (value) => {
+        // console.log(value);
+        setProductUrlCtx(value);
+    }
 
-    //     console.log("initialamount : ", initialAmount)
-    //     console.log("initialperiod : ", intialPeriod)
-
-    //     setAmountValue(parseFloat(initialAmount) || 500)
-    //     setPeriodValue(parseFloat(intialPeriod) || 6)
-    // }, [])
-
-
-
-    useEffect(() => {
-        let totalInterest, calculateIntersetAmount, totalAmountWithInt, monthlyPayment, numMonthlyPayment;
-
-        totalInterest = periodValue * 6;
-        // console.log("totalinterest : ", totalInterest)
-        calculateIntersetAmount = amountValue * (totalInterest / 100);
-        console.log("calculate 2 : ", calculateIntersetAmount);
-
-
-        totalAmountWithInt = parseFloat(amountValue) + parseFloat(calculateIntersetAmount);
-        // console.log("totalAmountWithInt:", totalAmountWithInt);
-        console.log("periodValue:", periodValue);
-
-
-        monthlyPayment = parseFloat(totalAmountWithInt) / parseFloat(periodValue);
-        // console.log('monthlypayment : ', monthlyPayment)
-        numMonthlyPayment = +monthlyPayment;
-
-        let data = { numMonthlyPayment, totalInterest, totalAmountWithInt };
-        console.log('data', data);
-        setPaymentData(data);
-
-        // console.log("context paymentData :", periodValue, numMonthlyPayment, totalInterest, totalAmountWithInt);
-
-        // localStorage.setItem('monthlyPayment', numMonthlyPayment);
-        // localStorage.setItem('totalInterest', totalInterest);
-        // localStorage.setItem('totalAmountWithInt', totalAmountWithInt);
-
-    }, [amountValue, periodValue])
+    const OfferDataHandler = (value) => {
+        // console.log(value);
+        localStorage.setItem('offerData', JSON.stringify(value));
+        setOfferDataValue(value);
+    }
     /* monthly calculation end */
 
 
 
 
-    // const initialToken = localStorage.getItem('authToken');
-    // const isPasswordChanged = localStorage.getItem('isPasswordChanged');
-    // const [token, setToken] = useState(initialToken);
-    // const [passwordChanged, setPasswordChanged] = useState(isPasswordChanged);
+    /* logout */
+    const logoutHandler = async () => {
+        localStorage.clear();
+    };
+    /* logout end */
 
-    // const userIsLoggedIn = !!token;
-    // const userPaswordChanged = !!passwordChanged;
 
-    // const loginHandler = (token) => {
-    //     setToken(token)
-    //     localStorage.setItem('authToken', token)
-    // }
-
-    // const logoutHandler = () => {
-    //     setToken(null);
-    //     localStorage.removeItem('authToken')
-    // }
-
-    // const passwordChangedHandler = (isChanged) => {
-    //     setPasswordChanged(isChanged)
-    //     if (isChanged) {
-    //         localStorage.setItem('isPasswordChanged', isChanged)
-    //     } else {
-    //         localStorage.removeItem('isPasswordChanged')
-    //     }
-    // }
 
     const contextValue = {
         instanceId: instanceId,
-        currentStep: currentStep,
+        prefilledData: prefilledData,
+
         createInstanceFunc: instanceIdHandler,
-        currentStepFunc: currentStepHandler,
+        prefilledDataFunc: prefilledDataHandler,
 
 
 
 
         amountSlideValue: amountValue,
         periodSlideValue: periodValue,
+        periodSlideValueMonth: periodValueInMonth,
 
         numMonthlyPayment: paymentData.numMonthlyPayment,
         totalInterest: paymentData.totalInterest,
         totalAmountWithInt: paymentData.totalAmountWithInt,
+        paymentData: paymentData,
+        productUrl: productUrlCtx,
+
+        offerData: offerDataValue,
 
 
         createAmountValueFunc: amountSlideValueHandler,
         createPeriodValueFunc: periodSlideValueHandler,
+        paymentDataFunc: paymentDataHandler,
+        productUrlFunc: productUrlHandler,
 
+        offerDataFunc: OfferDataHandler,
 
+        logoutFunc: logoutHandler,
 
-        // token: token,
-        // isLoggedIn: userIsLoggedIn,
-        // userPaswordChanged: userPaswordChanged,
-        // passwordChanged: passwordChangedHandler,
-        // login: loginHandler,
-        // logout: logoutHandler
     }
     return <AuthContext.Provider value={contextValue} >
         {props.children}

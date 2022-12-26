@@ -64,37 +64,41 @@
 /* loader end */
 
 /* range slider */
-.rangeslider,
-.rangeslider .rangeslider__fill {
-    box-shadow: none !important;
-}
+.drag-slide {
 
-.rangeslider {
-    background: #F6FAFE !important;
-}
+    .rangeslider,
+    .rangeslider .rangeslider__fill {
+        box-shadow: none;
+    }
 
-.rangeslider-horizontal {
-    height: 10px !important;
-}
+    .rangeslider {
+        background: #F6FAFE;
+    }
 
-.rangeslider-horizontal .rangeslider__fill {
-    background: linear-gradient(208.27deg, #59BBCA 0%, #00E6D2 100%) !important;
-}
+    .rangeslider-horizontal {
+        height: 10px;
+    }
 
-.rangeslider-horizontal .rangeslider__handle:after {
-    background-color: transparent !important;
-    box-shadow: none !important;
-    background: url('../img/handle-drag.svg');
-    background-position: center;
-    border-radius: 0 !important;
-    width: 18px !important;
-    height: 18px !important;
-}
+    .rangeslider-horizontal .rangeslider__fill {
+        background: linear-gradient(208.27deg, #59BBCA 0%, #00E6D2 100%);
+    }
 
-.rangeslider .rangeslider__handle {
-    background: #1831AF !important;
-    border: none !important;
-    box-shadow: none !important;
+    .rangeslider-horizontal .rangeslider__handle:after {
+        background-color: transparent;
+        box-shadow: none;
+        background: url('../img/handle-drag.svg');
+        background-position: center;
+        border-radius: 0;
+        width: 18px;
+        height: 18px;
+    }
+
+    .rangeslider .rangeslider__handle {
+        background: #1831AF;
+        border: none;
+        box-shadow: none;
+    }
+
 }
 
 /* range slider end */
@@ -184,6 +188,20 @@
     color: #fff !important;
 }
 
+.removeYear {
+
+    .react-datepicker__navigation,
+    .react-datepicker__header {
+        display: none;
+    }
+}
+
+.removeDisabledYear {
+    .react-datepicker__year-text--disabled {
+        display: none;
+    }
+}
+
 /* react-datepicker end */
 
 
@@ -209,7 +227,7 @@
     li {
         display: flex;
         align-items: flex-start;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         font-size: 14px;
         line-height: 1.6;
         color: rgba(18, 18, 50, 0.75);
@@ -240,6 +258,7 @@
 .sortcode {
     display: flex;
     align-items: center;
+    width: 220px;
 
     .form-grp-field {
         margin-bottom: 0;
@@ -250,6 +269,42 @@
     margin: 0 8px;
     font-size: 20px;
 }
+
+/* card error */
+.trustpay-form {
+
+    .notification-frame {
+        font-size: 16px;
+        padding: 8px;
+        height: auto;
+        margin-bottom: 14px;
+    }
+}
+
+/* card error end */
+
+/* header animation */
+.scroll-up header {
+    background: #ffffff;
+
+    .header-box {
+        height: ~"calc(var(--header-height) - 20px)";
+    }
+}
+
+.scroll-down header {
+    transform: translateY(-100%);
+}
+
+.scroll-up .logo img {
+    display: none;
+}
+
+.scroll-up .logo .scroll-logo {
+    display: block;
+}
+
+/* header animation */
 
 @media all and (max-width:990px) {
     .yourloan {

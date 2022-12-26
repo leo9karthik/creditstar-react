@@ -30,6 +30,23 @@
     :root {
         --header-height: 60px;
     }
+
+    .scroll-up .logo img {
+        width: 140px;
+    }
+
+    .scroll-up header {
+
+        .header-box {
+            height: ~"calc(var(--header-height) - 10px)";
+        }
+
+        .menuBtn .button {
+            height: 40px;
+            line-height: 40px;
+        }
+    }
+
 }
 
 @media all and (max-width:1200px) {
@@ -43,12 +60,12 @@
     }
 
 
-    .checkbox-box.check-three {
+    .radio-btn {
         margin-right: 5px;
         margin-bottom: 8px;
     }
 
-    .checkbox-box.check-three .chk-label {
+    .radio-btn .radio-label {
         padding: 12px 20px;
     }
 
@@ -84,13 +101,25 @@
         opacity: 1;
     }
 
-    .checkbox-box.check-three .chk-label:hover {
+    .radio-btn .radio-label:hover {
         background: #f8f7f9;
     }
 }
 
 @media all and (max-width:990px) {
 
+    .form-grp.form-inp-txt {
+        &.amt-slider {
+            input {
+                padding-left: 20px
+            }
+
+            em {
+                left: 12px;
+                font-size: 14px;
+            }
+        }
+    }
 
     .desktop-txt,
     .desktop-comp {
@@ -160,7 +189,7 @@
     }
 
     .banner-box {
-        margin-bottom: 32px;
+        margin: 0 auto 32px;
     }
 
     .banner-top-img {
@@ -239,6 +268,10 @@
         display: none;
     }
 
+    .sortcode {
+        width: 100%;
+    }
+
 }
 
 @media all and (max-width:768px) {
@@ -288,6 +321,9 @@
 }
 
 @media all and (max-width:990px) {
+    .banner-box {
+        max-width: 350px;
+    }
 
     .header1,
     .header2 {
@@ -315,6 +351,7 @@
     .banner-top-img {
         position: fixed;
         height: 100%;
+        background-position-x: ~"calc(50% - 200px)";
     }
 
     .banner-hdn {
@@ -395,18 +432,18 @@
 
     }
 
-    .checkbox-box.check-three .chk-label {
+    .radio-btn .radio-label {
         padding: 12px 15px;
     }
 
     .mob-full-chk {
-        .checkbox-box.check-three {
+        .radio-btn {
             margin-right: 0;
             margin-bottom: 8px;
             width: 100%;
         }
 
-        .checkbox-box.check-three:last-child {
+        .radio-btn:last-child {
             margin-bottom: 0;
         }
     }
@@ -414,17 +451,17 @@
     .title-chk {
         display: flex;
 
-        .checkbox-box.check-three .chk-label {
+        .radio-btn .radio-label {
             justify-content: center;
         }
 
-        .checkbox-box.check-three {
+        .radio-btn {
             margin-right: 6px;
             margin-bottom: 0;
             flex: 1;
         }
 
-        .checkbox-box.check-three:last-child {
+        .radio-btn:last-child {
             margin-right: 0;
         }
     }
@@ -510,3 +547,13 @@
         padding: 20px;
     }
 }
+
+
+/* max-height */
+@media all and (max-height:576px) {
+    .banner-top-img {
+        background-position-x: right;
+    }
+}
+
+/* max-height end */

@@ -8,14 +8,17 @@
 => Global Styles
 => buttons
 => Form Elements
-=> Radio Small
-=> Checkbox Small
+=> radio button
 => Tooltip
 => Modal
 
 -------------------------------------------------------------------*/
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 // @import url('https://use.typekit.net/hbf6xjo.css');
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
 
 html,
 body {
@@ -109,11 +112,11 @@ p {
 
 @font-face {
     font-family: 'icomoon';
-    src: url('../fonts/icomoon.eot?xvq32i');
-    src: url('../fonts/icomoon.eot?xvq32i#iefix') format('embedded-opentype'),
-        url('../fonts/icomoon.ttf?xvq32i') format('truetype'),
-        url('../fonts/icomoon.woff?xvq32i') format('woff'),
-        url('../fonts/icomoon.svg?xvq32i#icomoon') format('svg');
+    src: url('../fonts/icomoon.eot?49ijdt');
+    src: url('../fonts/icomoon.eot?49ijdt#iefix') format('embedded-opentype'),
+        url('../fonts/icomoon.ttf?49ijdt') format('truetype'),
+        url('../fonts/icomoon.woff?49ijdt') format('woff'),
+        url('../fonts/icomoon.svg?49ijdt#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -133,6 +136,22 @@ p {
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-toast-check:before {
+    content: "\e90b";
+}
+
+.icon-warning:before {
+    content: "\e90d";
+}
+
+.icon-eye-slash:before {
+    content: "\e909";
+}
+
+.icon-eye:before {
+    content: "\e90a";
 }
 
 .icon-pencil:before {
@@ -170,6 +189,7 @@ p {
 .icon-calender:before {
     content: "\e903";
 }
+
 
 
 /*==========================================================================
@@ -304,7 +324,7 @@ p {
     .customMargin(mb-640-; 21);
 }
 
-@media all and (max-width:990px) {
+@media all and (max-width:480px) {
     .grid(f-480; 10);
     .customWidth(w-480-; 20);
 
@@ -639,6 +659,17 @@ hr {
         background: var(--clr-blue);
         color: var(--clr-white);
     }
+
+    &.butn-blue.line {
+        background: transparent;
+        border-color: var(--clr-blue);
+        color: var(--clr-blue);
+    }
+
+    &.butn-blue.line:hover {
+        background: var(--clr-blue);
+        color: var(--clr-white);
+    }
 }
 
 
@@ -924,7 +955,8 @@ button:focus {
 .form-grp .view-pass {
     position: absolute;
     right: 10px;
-    top: 15px;
+    // top: 15px;
+    top: 50%;
     line-height: 0;
     font-size: 22px;
     cursor: pointer;
@@ -1125,8 +1157,13 @@ button:focus {
     padding-right: 50px;
 }
 
+.select-field optgroup {
+    font-size: 15px;
+    color: #000;
+}
+
 .select-field option {
-    // font-size: 14px;
+    font-size: 15px;
     color: #9fa4a9;
 }
 
@@ -1162,81 +1199,23 @@ label.error {
 }
 
 
-
 /*==========================================================================
-=> Radio Small
+=> radio button
 ========================================================================== */
-.radio-box {
+.radio-btn {
     position: relative;
     display: inline-block;
-    margin-right: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 18px;
+    margin-right: 12px;
 }
 
-.radio-box input {
+.radio-btn input {
     position: absolute;
     width: 0;
     opacity: 0;
 }
 
-.radio-box label {
-    font-size: 18px;
-    color: #000;
-    margin: 0;
-    padding: 5px;
-    padding-left: 36px;
-    cursor: pointer;
-    position: relative;
-}
-
-.radio-box label:before {
-    content: "";
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: transparent;
-    border: 1px solid var(--clr-mint-green);
-    display: inline-block;
-    position: absolute;
-    left: 0;
-    top: 5px;
-    .anim();
-}
-
-.radio-box input:checked~label::before {
-    border: 7px solid var(--clr-mint-green);
-}
-
-.radio-box label.error {
-    display: none !important;
-}
-
-.radio-box input.error~label {
-    color: #ff2323;
-}
-
-.radio-box input.error~.chk-label:before {
-    border: 1px solid #ff2323;
-}
-
-/* // Radio Box */
-
-/*==========================================================================
-=> Checkbox Small
-========================================================================== */
-.checkbox-box {
-    position: relative;
-    display: inline-block;
-    margin-bottom: 30px;
-}
-
-.checkbox-box input {
-    position: absolute;
-    width: 0;
-    opacity: 0;
-}
-
-.checkbox-box input.only-chkbox {
+.radio-btn input.only-chkbox {
     position: absolute;
     width: 20px;
     height: 20px;
@@ -1247,167 +1226,54 @@ label.error {
     opacity: 0;
 }
 
-.checkbox-box .chk-label {
+.radio-btn .radio-label {
     font-size: 16px;
     color: var(--clr-black);
     line-height: 1.5;
-    margin: 0;
-    padding: 5px;
-    padding-left: 36px;
     cursor: pointer;
     position: relative;
+    padding: 15px 22px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    .flex(flex-start, center);
+    background: #F8F7F9;
     .anim();
 
-    &:before {
-        content: "";
-        width: 22px;
-        height: 22px;
-        border-radius: 4px;
-        background: transparent;
-        border: 1.5px solid var(--clr-mint-green);
-        display: inline-block;
-        position: absolute;
-        left: 0;
-        top: 5px;
-        .anim();
+    span {
+        color: var(--clr-black);
     }
 
-    &:after {
-        content: "";
-        // width: 12px;
-        // height: 12px;
-        border-radius: 3px;
-        display: inline-block;
-        position: absolute;
-        left: 5px;
-        top: 7px;
-        .anim();
-    }
 }
 
-.checkbox-box input:checked {
-    &~.chk-label {
-        // &::before {
-        //     border: 12.5px solid var(--blue);
-        // }
-
-        &::after {
-            font-family: 'icomoon' !important;
-            content: "\e901";
-            color: var(--clr-mint-green);
-            font-size: 12px;
-        }
-    }
+.radio-btn input:checked~.radio-label {
+    background: #eafbfa;
+    border-color: #00e6d2;
 }
 
-.checkbox-box label.error {
+.radio-btn label.error {
     display: none !important;
 }
 
-.checkbox-box input.error~.chk-label {
+.radio-btn input.error~.radio-label {
     color: #ff2323;
 }
 
-.checkbox-box input.error~.chk-label:before {
+.radio-btn input.error~.radio-label:before {
     border: 1px solid #ff2323;
 }
 
-/* // Checkbox */
-
-
-/* checkbox 2 */
-.checkbox-box.chk-rd {
-
-    .chk-label {
-
-        &:before {
-            border-radius: 100%;
-        }
-
-    }
-}
-
-.checkbox-box input:checked {
-    &~.chk-label {
-        &::before {
-            background: var(--clr-mint-green);
-        }
-
-        &::after {
-            color: #ffffff;
-        }
-    }
-}
-
-/* checkbox 2 end */
-
-/* checkbox 3 */
-.checkbox-box.check-three {
-    margin-right: 12px;
-    margin-bottom: 18px;
-
-    .chk-label {
-        padding: 15px 22px;
-        border: 1px solid transparent;
-        border-radius: 8px;
-        .flex(flex-start, center);
-        background: #F8F7F9;
-
-        span {
-            color: var(--clr-black);
-        }
-
-        // &:before {
-        //     border-radius: 100%;
-        //     border: none;
-        // }
-
-        &:before,
-        &:after {
-            // left: inherit;
-            // right: -11px;
-            // top: -11px;
-            display: none;
-        }
-
-    }
-
-    .chk-label:hover {
-        background: #eafbfa;
-    }
-}
-
-.checkbox-box.check-three input:checked {
-
-    &~.chk-label {
-        border-color: #00E6D2;
-        background: #EAFBFA;
-
-        // &::after {
-        //     width: 22px;
-        //     height: 22px;
-        //     border-radius: 100%;
-        //     position: absolute;
-        //     // background: var(--clr-mint-green);
-        //     color: #fff;
-        //     .flex(center, center);
-        // }
-    }
-}
-
-.checkbox-box.check-three input:disabled {
-    &~.chk-label {
+.radio-btn input:disabled {
+    &~.radio-label {
         span {
             color: #DBD8DF;
         }
     }
 
-    &~.chk-label:hover {
+    &~.radio-label:hover {
         background: #f8f7f9;
     }
 }
 
-/* checkbox 3 end */
 
 /*==========================================================================
 => Tooltip
@@ -1674,11 +1540,11 @@ label.error {
 }
 
 .modal-backdrop.show {
-    opacity: .9;
+    opacity: .28;
 }
 
 .modal-backdrop {
-    background-color: #fff;
+    background-color: #000000;
 }
 
 .modal-cancel:hover {
@@ -1862,3 +1728,119 @@ label.error {
 
 
 /* content page end */
+
+
+/* react css */
+
+.Toastify__toast-container.comm-toaster {
+
+    .Toastify__toast-theme--light {
+        backdrop-filter: blur(44px);
+    }
+
+    .Toastify__toast {
+        padding: 12px 20px;
+        border-radius: 12px;
+        box-shadow: none;
+        background: rgba(255, 255, 255, 0.82);
+
+        &.Toastify__toast--error {
+            // background: rgba(255, 0, 0, 0.1);
+        }
+    }
+
+    .Toastify__toast-body {
+        font-family: 'Lato', sans-serif;
+        padding: 0;
+        padding-right: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #000;
+    }
+
+    .Toastify__close-button,
+    .Toastify__toast-icon svg {
+        display: none;
+    }
+
+    .Toastify__toast--success {
+        .Toastify__toast-icon::after {
+            font-family: 'icomoon' !important;
+            content: "\e90b";
+        }
+    }
+
+    .Toastify__toast--error {
+        .Toastify__toast-icon::after {
+            font-family: 'icomoon' !important;
+            content: "\e90d";
+        }
+    }
+
+    .Toastify__toast-icon {
+        font-size: 18px;
+    }
+
+    .Toastify__progress-bar-theme--light {
+        background: linear-gradient(56.99deg, #59BBCA 25.27%, #00E6D2 78.12%);
+    }
+}
+
+
+
+
+/* modal */
+.comm-modal {
+    .modal-content {
+        position: relative;
+        max-width: 556px;
+        margin: 0 auto;
+        padding: 44px;
+    }
+
+    .term-content {
+        margin-bottom: 24px;
+    }
+}
+
+.modal-hdn-box {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.modal-hdn {
+    font-weight: 800;
+    font-size: 24px;
+    color: #0F0F0F;
+    margin-bottom: 12px;
+}
+
+.modal-date-update {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #121232;
+    opacity: 0.75;
+}
+
+.modal-close {
+    font-size: 24px;
+    color: #000000;
+    position: absolute;
+    top: 35px;
+    right: 35px;
+    cursor: pointer;
+}
+
+/* modal end */
+
+
+@media all and (max-width:480px) {
+    .Toastify__toast-container.comm-toaster {
+        .Toastify__toast {
+            border-radius: 0;
+        }
+    }
+}
+
+/* react css end */

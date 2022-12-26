@@ -1,5 +1,14 @@
 import React from 'react'
+
+/* plugin */
+import { motion } from "framer-motion";
+/* plugin end */
+
+/* component */
 import Header from '../../components/Header';
+import InnerBgComp from '../../components/InnerBgComp';
+import { Link } from 'react-router-dom';
+/* component end */
 
 const { REACT_APP_PUBLIC_URL } = process.env;
 
@@ -15,30 +24,49 @@ const PageNotFound = () => {
 
       {/* Main Container Starts */}
       <div className="main-container">
-        <div className="banner-top-img inner-bg-img add-bg-mob" style={{ backgroundImage: `url('${REACT_APP_PUBLIC_URL}/img/inner-bg-img.jpg')` }}>
-        </div>
+        <InnerBgComp classes={"inner-bg-img add-bg-mob"} />
         <div className="container">
           {/* start */}
-          <div className="comm-box pnf-box">
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="comm-box pnf-box">
 
-            <div className="pnf-img">
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="pnf-img">
               <img src={`${REACT_APP_PUBLIC_URL}/img/linkoff.svg`} alt="" />
-            </div>
+            </motion.div>
 
             <div className="congo-cont">
-              <h4 className="congo-hdn">Oops!</h4>
-              <div className="congo-para">
+              <motion.h4
+                initial={{ y: 60, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="congo-hdn">
+                Oops!
+              </motion.h4>
+              <motion.div
+                initial={{ y: 60, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="congo-para">
                 <p>The page your’re looking for <br /> could not be found</p>
-              </div>
+              </motion.div>
+
+              <Link to="/login">Test</Link>
             </div>
 
 
-          </div>
+          </motion.div>
           {/* end */}
         </div>
-      </div>
+      </div >
       {/* Main Container Ends */}
-    </div>
+    </div >
   )
 }
 

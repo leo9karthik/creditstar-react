@@ -1,313 +1,281 @@
-import React, { useContext, useEffect } from 'react';
-import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import formService from '../../service/formService';
-import AuthContext from '../../store/auth-context';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-import gs from '../../service/global';
+import React, { useContext, useEffect } from "react";
 
-const { REACT_APP_PUBLIC_URL, REACT_APP_FLOWID } = process.env;
+/* plugin */
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import axios from "axios";
+/* plugin end */
+
+/* service */
+import AuthContext from "../../store/auth-context";
+import gs from "../../service/global";
+import { stepFun, toasterConfig } from "../../config/Constant";
+import formService from "../../service/formService";
+/* service end */
+
+/* component */
+import ErrorMsgComp from "../../components/ErrorMsgComp";
+import AuthHeader from "../../components/AuthHeader";
+import InnerBgComp from "../../components/InnerBgComp";
+import AuthHeadingComp from "../../components/AuthHeadingComp";
+/* component end */
+
+const { REACT_APP_FLOWID } = process.env;
 
 const OtpVerification = () => {
-    const authCtx = useContext(AuthContext);
-    var instanceId = authCtx?.instanceId;
-    // console.log(instanceId);
-    const navigate = useNavigate();
-    // console.log(authCtx);
+  const authCtx = useContext(AuthContext);
+  const instanceId = authCtx?.instanceId;
+  // console.log(instanceId);
+  const navigate = useNavigate();
+  // console.log(authCtx);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm({
-        // mode: "onBlur",
-        mode: "all",
-    });
+  /* get mobile data */
+  const getMobileData = localStorage.getItem("mobileData");
+  const parseData = JSON.parse(getMobileData);
+  /* get mobile data end */
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    // mode: "onBlur",
+    mode: "all",
+  });
 
-    /* change number function */
-    const changeNumber = () => {
-        console.log("Change Number");
+  /* change number function */
+  const changeNumber = () => {
+    // console.log("Change Number");
 
-        let payload = {
-            "action": "back"
-        }
-        console.log(payload);
+    let payload = {
+      action: "back",
+    };
+    // console.log(payload);
 
+    axios
+      .post(`/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+      .then((response) => {
+        const result = response?.data;
+        const currentStep = result?.currentStepId;
+        navigate(stepFun()[currentStep], { replace: true });
 
-        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
-            .then((response) => {
-                const result = response?.data;
-                authCtx.currentStepFunc(result?.currentStepId);
-
-                // redirect to login
-                navigate("/login", { replace: true });
-            })
-            .catch((error) => {
-                console.log(error);
-
-                /* Loader Starts */
-                gs.showLoader(false);
-                /* Loader Ends */
-
-                toast.error('Something went wrong!', {
-                    position: "top-right",
-                    autoClose: 4000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-
-            });
-
-    }
-    /* change number function end */
-
-    /* Resend OTP function */
-    const resendOtp = () => {
-        console.log("Resend OTP");
-
-        let payload = {
-            "action": "resend"
-        }
-        console.log(payload);
-
-
-        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
-            .then((response) => {
-                const result = response?.data;
-                authCtx.currentStepFunc(result?.currentStepId);
-
-            })
-            .catch((error) => {
-                console.log(error);
-
-                /* Loader Starts */
-                gs.showLoader(false);
-                /* Loader Ends */
-
-                toast.error('Something went wrong!', {
-                    position: "top-right",
-                    autoClose: 4000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-
-            });
-
-    }
-    /* Resend OTP function end */
-
-    /* Post Data */
-    const onSubmit = (data) => {
-        let inputData = data;
-        // console.log(inputData?.verificationcode);
-
-        let payload = {
-            "action": "submit",
-            "data": {
-                "phoneCode": inputData?.verificationcode
-            }
-        }
-        console.log(payload);
+        // redirect to login
+        navigate(`/${instanceId}`, { replace: true });
+      })
+      .catch((error) => {
+        console.log(error);
+        const errorResult = error?.response?.data?.errors[0];
+        console.log("Error Result:", errorResult);
+        const errorEnd = error?.response?.data?.currentStepId;
+        navigate(stepFun()[errorEnd], { replace: true });
 
         /* Loader Starts */
-        gs.showLoader(true);
+        gs.showLoader(false);
         /* Loader Ends */
 
+        toast.error("Something went wrong!", toasterConfig);
+      });
+  };
+  /* change number function end */
 
+  /* Resend OTP function */
+  const resendOtp = () => {
+    // console.log("Resend OTP");
 
-        axios.post(`/v1/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
-            .then((response) => {
-                const result = response?.data;
-                authCtx.currentStepFunc(result?.currentStepId);
-                console.log(result);
+    let payload = {
+      action: "resend",
+    };
+    // console.log(payload);
 
+    axios
+      .post(`/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+      .then((response) => {
+        const result = response?.data;
+        const currentStep = result?.currentStepId;
+        navigate(stepFun()[currentStep], { replace: true });
 
-                // localStorage.setItem('amount', 500);
-                // localStorage.setItem('period', 180);
-                // localStorage.setItem('monthlyPayment', 113.33);
+        const notificationResult = result?.notifications[0];
+        // console.log(notificationResult);
 
+        /* Loader Starts */
+        gs.showLoader(false);
+        toast.success(notificationResult, toasterConfig);
+        /* Loader Ends */
+      })
+      .catch((error) => {
+        console.log(error);
+        const errorResult = error?.response;
+        console.log("Error Result:", errorResult);
+        const errorEnd = error?.response?.data?.currentStepId;
+        navigate(stepFun()[errorEnd], { replace: true });
 
+        /* Loader Starts */
+        gs.showLoader(false);
+        /* Loader Ends */
 
+        toast.error("Something went wrong!", toasterConfig);
+      });
+  };
+  /* Resend OTP function end */
 
-                /* Loader Starts */
-                gs.showLoader(false);
-                toast.success('OTP verified successfully.', {
-                    position: "top-right",
-                    autoClose: 4000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                /* Loader Ends */
+  /* Post Data */
+  const onSubmit = (data) => {
+    let inputData = data;
+    // console.log(inputData);
 
+    let payload = {
+      action: "submit",
+      data: {
+        phoneCode: inputData?.verificationcode,
+      },
+    };
+    // console.log(payload);
 
-                // redirect to Welcome
-                navigate("/welcome", { replace: true });
-            })
-            .catch((error) => {
-                console.log(error);
+    /* Loader Starts */
+    gs.showLoader(true);
+    /* Loader Ends */
 
-                /* Loader Starts */
-                gs.showLoader(false);
-                /* Loader Ends */
+    axios
+      .post(`/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+      .then((response) => {
 
-                toast.error('Something went wrong!', {
-                    position: "top-right",
-                    autoClose: 4000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+        const result = response?.data;
+        const currentStep = result?.currentStepId;
+        navigate(stepFun()[currentStep], { replace: true });
+        authCtx.prefilledDataFunc(result?.prefilledData);
+        // console.log(result);
 
-            });
+        const preData = result?.prefilledData || {};
+        // console.log(+preData?.amount)
+        authCtx?.createAmountValueFunc(+preData?.amount);
+        authCtx?.createPeriodValueFunc(+preData?.duration / 30);
 
+        /* Loader Starts */
+        gs.showLoader(false);
+        toast.success(
+          "Your mobile number verified successfully.",
+          toasterConfig
+        );
+        /* Loader Ends */
 
-    }
-    /* Post Data end */
+      })
+      .catch((error) => {
+        console.log(error);
+        const errorResult = error?.response?.data?.errors[0];
+        // console.log("Error Result:", errorResult);
+        const errorEnd = error?.response?.data?.currentStepId;
+        navigate(stepFun()[errorEnd], { replace: true });
 
-    useEffect(() => {
+        /* Loader Starts */
+        gs.showLoader(false);
+        /* Loader Ends */
 
-        /* form service */
-        formService.inputEmptyCheck();
-        /* form service end */
-    }, [])
+        toast.error(errorResult, toasterConfig);
+      });
+  };
+  /* Post Data end */
 
+  useEffect(() => {
+    /* form service */
+    formService.inputEmptyCheck();
+    /* form service end */
+  }, []);
 
-    return (
-        <div>
+  return (
+    <div>
+      {/* Header Starts */}
+      <AuthHeader />
+      {/* Header Ends */}
 
-            {/* Header Starts */}
-            <header id="header">
-                <div className="header-box">
-                    <div className="head-container">
-                        <div className="head-left">
-                            <div className="logoBox">
-                                <div className="logo">
-                                    <picture>
-                                        <source media="(max-width:990px)" srcSet={`${REACT_APP_PUBLIC_URL}/img/logo.svg`} />
-                                        <img src={`${REACT_APP_PUBLIC_URL}/img/logo-white.svg`} alt="logo" />
-                                        <img className="scroll-logo" src={`${REACT_APP_PUBLIC_URL}/img/logo.svg`} alt="logo" />
-                                    </picture>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="head-right">
-                            <ul className="header-list">
-                                {/* <li><a href="#">Already have an account?</a></li> */}
-                            </ul>
-                            <div className="menuBtn">
-                                <a href="#" className="button butn-blue">Log in</a>
-                                <div className="menu side-menu"><img src={`${REACT_APP_PUBLIC_URL}/img/menu.svg`} alt="Menu" /></div>
-                            </div>
-                        </div>
-                    </div>
+      {/* Main Container Starts */}
+      <div className="main-container">
+        <InnerBgComp bgImg={true} />
+
+        {/* start */}
+        <div className="comm-rev">
+          <div className="container">
+
+            {/* heading component */}
+            <AuthHeadingComp />
+            {/* heading component end */}
+
+            {/* form */}
+            <motion.div
+              initial={{ y: 60, scale: 0.8, opacity: 0 }}
+              animate={{ y: 0, scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="form-box"
+            >
+
+              <div className="auth-hdn-box">
+                <h2 className="auth-hdn">Enter code</h2>
+                <div className="auth-para">
+                  <p>
+                    Verification code sent to
+                    <i>
+                      <span> {parseData?.phoneNumber}</span>{" "}
+                      <a href="#!" onClick={() => changeNumber()}>
+                        {" "}
+                        Change
+                      </a>
+                    </i>
+                  </p>
                 </div>
-                {/* Side Menu */}
-                <div className="menuOverlay" />
-                <div className="mobile-menu">
-                    <h3 className="close-menu">
-                        <img src="" alt="cancel" />
-                    </h3>
-                    <ul className="header-list">
-                        <li><a href="#">Already have an account?</a></li>
-                    </ul>
-                    <div className="mob-menu-footer">
-                        <div className="footerIcon-section">
-                            <img src={`${REACT_APP_PUBLIC_URL}/img/logo-white.svg`} alt="Company Head Office Contact Number" />
-                        </div>
-                        {/* <a className="mob-menu-footer--num" href="#" /> */}
-                    </div>
-                </div>
-                {/* Side Menu End */}
-            </header>
-            {/* Header Ends */}
+              </div>
 
-
-            {/* Main Container Starts */}
-            <div className="main-container">
-                <div className="banner-top-img" style={{ backgroundImage: `url('${REACT_APP_PUBLIC_URL}/img/home-banner-img.png')` }}>
-                    {/* <img src="./img/home-banner-img.png" alt=""> */}
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="form-grp-field">
+                  <div className="form-grp">
+                    <input
+                      className="form-field"
+                      type="number"
+                      onWheel={(e) => e.target.blur()}
+                      id="verification-code"
+                      name="verificationcode"
+                      defaultValue={parseData?.otpCode}
+                      {...register("verificationcode", {
+                        required: "Verification code is required",
+                        pattern: {
+                          value: /^[0-9]*$/,
+                          message: "Enter a valid Verification code",
+                        },
+                      })}
+                    />
+                    <p className="form-label">Verification code</p>
+                  </div>
+                  {errors.verificationcode && (
+                    <ErrorMsgComp
+                      errorMessage={errors.verificationcode.message}
+                    />
+                  )}
                 </div>
-                {/* start */}
-                <div className="comm-rev">
-                    <div className="container">
-                        <div className="banner-box">
-                            <h2 className="banner-hdn">Get a loan online,<br /> in 2 minutes!</h2>
-                            <div className="banner-para">
-                                <p>Applying for a Creditstar loan is fast, secure, and reliable.</p>
-                            </div>
-                        </div>
-                        {/* form */}
-                        <div className="form-box">
-                            {/* <div class="info-txt">
-                                <i class="icon-info info-ico"></i>
-                                <p>This won’t affect your credit score</p>
-                            </div> */}
-                            <div className="auth-hdn-box">
-                                <h2 className="auth-hdn">
-                                    Verification
-                                </h2>
-                                <div className="auth-para">
-                                    <p>We have sent a code to
-                                        <i><span>07554446921</span>. <a href="#!" onClick={() => changeNumber()}> Change</a></i>
-                                    </p>
-                                </div>
-                            </div>
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                <div className="form-grp-field">
-                                    <div className="form-grp">
-                                        <input
-                                            className="form-field"
-                                            type="number"
-                                            id="verification-code"
-                                            name="verificationcode"
-                                            {...register("verificationcode", {
-                                                required: "Verification code is required",
-                                                pattern: {
-                                                    value: /^[0-9]*$/,
-                                                    message: "Enter a valid Verification code"
-                                                }
-                                            })}
-                                        />
-                                        <p className="form-label">Verification code</p>
-                                    </div>
-                                    {errors.verificationcode &&
-                                        <div className="form-input-error">
-                                            <i className="icon-input-error"></i>
-                                            <p>{errors.verificationcode.message}</p>
-                                        </div>
-                                    }
-                                </div>
-                                <div className="auth-para ap-txt-cen mob-rm-resend">
-                                    <p>Didn’t get the a code? <a href="#" className="comm-link" onClick={() => resendOtp()}>Click to resend</a></p>
-                                </div>
-                                {/* <div class="auth-btn"> */}
-                                <button className="button button--block" type="submit"><span>Submit</span></button>
-                            </form>
-                            <button className="button butn-white button--block resend-mob"><span>Resend</span></button>
-                            {/* </div> */}
-                        </div>
-                        {/* form end */}
-                    </div>
+                <div className="auth-para ap-txt-cen mob-rm-resend">
+                  <p> Didn’t get the code? <b className="comm-link" onClick={() => resendOtp()} > Resend </b>
+                  </p>
                 </div>
-                {/* end */}
-            </div>
-            {/* Main Container Ends */}
+                {/* <div className="auth-btn"> */}
+                <button className="button button--block" type="submit">
+                  <span>Verify</span>
+                </button>
+              </form>
+              <button
+                className="button butn-white button--block resend-mob"
+                onClick={() => resendOtp()}
+              >
+                <span>Resend</span>
+              </button>
+              {/* </div> */}
+            </motion.div>
+            {/* form end */}
+          </div>
         </div>
+        {/* end */}
+      </div>
+      {/* Main Container Ends */}
+    </div>
+  );
+};
 
-    )
-}
-
-export default OtpVerification
+export default OtpVerification;

@@ -1,163 +1,227 @@
-import React, { useEffect, useState } from 'react'
-import Header from '../../../components/Header'
-import LoanCalComp from '../../../components/LoanCalComp'
+import React, { useContext, useState } from "react";
 
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
-import { useForm } from "react-hook-form";
-import formService from '../../../service/formService';
-import { useNavigate } from 'react-router-dom';
-import MontlyPaymentComp from '../../../components/MontlyPaymentComp';
+/* plugin */
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+/* plugin end */
 
-const { REACT_APP_PUBLIC_URL } = process.env;
+/* service */
+import gs from "../../../service/global";
+import AuthContext from "../../../store/auth-context";
+import { stepFun, toasterConfig } from "../../../config/Constant";
+/* service end */
+
+/* component */
+import Header from "../../../components/Header";
+import InnerBgComp from "../../../components/InnerBgComp";
+import MontlyPaymentComp from "../../../components/MontlyPaymentComp";
+/* component end */
+
+const { REACT_APP_FLOWID } = process.env;
 
 const WelcomeStep2In1 = () => {
+  const authCtx = useContext(AuthContext);
+  // console.log("welcomeStep2in1:", authCtx);
+  const instanceId = authCtx?.instanceId;
 
-    /* steps */
-    const [steps, setSteps] = useState(1);
-    setTimeout(() => {
-        setSteps(2)
-    }, 1000);
-    let percentage = (steps / 4) * 100;
-    /* steps end */
+  /* steps */
+  const [steps, setSteps] = useState(1);
+  setTimeout(() => {
+    setSteps(2);
+  }, 1000);
+  let percentage = (steps / 4) * 100;
+  /* steps end */
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  const addressData = JSON.parse(localStorage.getItem("residentialAddress"));
+  // console.log(addressData);
+
+  const residencyDataFun = () => {
+    // console.log("Address Data:", addressData);
+
+    let payload = {
+      action: "submit",
+      data: {
+        address: addressData?.address,
+        postcode: addressData?.postcode,
+        houseNo: addressData?.houseNo,
+        houseName: addressData?.houseName,
+        street: addressData?.street,
+        city: addressData?.city,
+        region: addressData?.region,
+        moveInMonth: addressData?.moveInMonth,
+        moveInYear: addressData?.moveInYear,
+        residentialStatus: addressData?.residentialStatus,
+        amount: authCtx?.amountSlideValue,
+        duration: authCtx?.periodSlideValueMonth,
+      },
+    };
+    // console.log(payload);
+
+    /* Loader Starts */
+    gs.showLoader(true);
+    /* Loader Ends */
+
+    axios
+      .post(`/flow/${REACT_APP_FLOWID}/instances/${instanceId}`, payload)
+      .then((response) => {
+        const result = response?.data;
+        const currentStep = result?.currentStepId;
+        navigate(stepFun()[currentStep], { replace: true });
+        authCtx.prefilledDataFunc(result?.prefilledData);
+        // console.log(result);
+
+        /* Loader Starts */
+        gs.showLoader(false);
+        /* Loader Ends */
+
+      })
+      .catch((error) => {
+        const errorEnd = error?.response?.data?.currentStepId;
+        navigate(stepFun()[errorEnd], { replace: true });
+        console.log(error);
+        const errorResult = error?.response?.data?.errors;
+        const arrayOfString = Object.values(errorResult);
+        const arrayFlatten = arrayOfString.flat();
+
+        /* Loader Starts */
+        gs.showLoader(false);
+        /* Loader Ends */
+
+        for (let itemData of arrayFlatten) {
+          // console.log(itemData);
+
+          toast.error(itemData, toasterConfig);
+        }
+      });
+  };
+
+  const backToAddress = () => {
+    navigate("/address", { replace: true });
+  };
+  /* Post data end */
 
 
-    const addressData = JSON.parse(localStorage.getItem('residentialAddress'));
-    console.log(addressData);
+  return (
+    <div>
+      {/* Header Starts */}
+      <Header headerOne={true} />
+      {/* Header Ends */}
 
+      {/* Main Container Starts */}
+      <div className="main-container">
+        <InnerBgComp classes={"inner-bg-img add-bg-mob"} />
 
-    /* react-form-hook */
-    // const {
-    //     register,
-    //     handleSubmit,
-    //     formState: { errors }
-    // } = useForm({
-    //     // mode: "onBlur",
-    //     mode: "all",
-    // });
-    /* react-form-hook end */
+        <div className="container">
+          {/* start */}
+          <div className="welcome-box">
+            <div className="welcome-right">
+              {/* start */}
+              <MontlyPaymentComp />
+              {/* end */}
+            </div>
+            <motion.div
+              initial={{ y: 60, scale: 0.9, opacity: 0 }}
+              animate={{ y: 0, scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="welcome-left"
+            >
+              {/* start */}
+              <div className="comm-box">
+                <div className="comm-hdn-slide">
+                  <div className="comm-hdn-box">
+                    <h3 className="comm-hdn">Where you live</h3>
+                    <div className="comm-para">
+                      <p>
+                        Search and add your residency address.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="comm-step">
 
+                    <CircularProgressbar
+                      strokeWidth={8}
+                      value={percentage}
+                      text={`${steps}/4`}
+                      styles={buildStyles({
+                        // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                        strokeLinecap: "butt",
 
-    /* Post data */
-    // const onSubmit = (data) => {
-    //     let payload = data;
-    //     console.log(payload);
+                        // Text size
+                        textSize: "22px",
 
-    //     // redirect to dashboard
-    //     navigate("/finances", { replace: true });
-    // }
-
-    const residencyDataFun = () => {
-
-
-        // navigate("/finances", { replace: true });
-    }
-
-    const backToAddress = () => {
-        navigate("/address-lookup", { replace: true });
-    }
-    /* Post data end */
-
-    useEffect(() => {
-
-
-        /* form service */
-        formService.inputEmptyCheck();
-        /* form service end */
-    }, [])
-
-    return (
-        <div>
-            {/* Header Starts */}
-            <Header headerOne={true} />
-            {/* Header Ends */}
-
-
-            {/* Main Container Starts */}
-            <div className="main-container">
-                <div className="banner-top-img inner-bg-img add-bg-mob" style={{ backgroundImage: `url('${REACT_APP_PUBLIC_URL}/img/inner-bg-img.png')` }}>
+                        // Colors
+                        pathColor: `rgba(0, 230, 210, 1)`,
+                        textColor: "#938E9E",
+                        trailColor: "#F8F7F9",
+                      })}
+                    />
+                  </div>
                 </div>
-                <div className="container">
+                <div className="addr-main-box">
+                  <div className="addr-card">
+                    {/* <h5 className="addr-hdn">Current address</h5> */}
+                    <h5 className="form-quest">Please confirm your address</h5>
                     {/* start */}
-                    <div className="welcome-box">
-                        <div className="welcome-right">
-
-                            {/* start */}
-                            <MontlyPaymentComp />
-                            {/* end */}
-
+                    <div className="addr-box">
+                      <div className="addr-hdn-cross">
+                        <div className="addr-cont-box">
+                          <h6 className="addr-cont-hdn">
+                            {addressData?.houseNo || addressData?.houseName
+                              ? `${addressData?.houseNo} ${addressData?.houseName},`
+                              : null}
+                            <br />
+                            {addressData?.street
+                              ? `${addressData?.street},`
+                              : null}
+                            <br />
+                            {addressData?.city || addressData?.region
+                              ? `${addressData?.city} ${addressData?.region},`
+                              : null}
+                            <br />
+                            {addressData?.postcode
+                              ? `${addressData?.postcode}`
+                              : null}
+                            <br />
+                          </h6>
+                          <p className="addr-owner">
+                            Moved in {addressData?.fullMonth} {addressData?.moveInYear}
+                          </p>
                         </div>
-                        <div className="welcome-left">
-                            {/* start */}
-                            <div className="comm-box">
-                                <div className="comm-hdn-slide">
-                                    <div className="comm-hdn-box">
-                                        <h3 className="comm-hdn">
-                                            Your residency
-                                        </h3>
-                                        <div className="comm-para">
-                                            <p>You can find your address by adding your postal code.</p>
-                                        </div>
-                                    </div>
-                                    <div className="comm-step">
-                                        {/* <img src={`${REACT_APP_PUBLIC_URL}/img/steps.png`} alt="" /> */}
-
-                                        <CircularProgressbar
-                                            strokeWidth={8}
-                                            value={percentage}
-                                            text={`${steps}/4`}
-
-
-                                            styles={buildStyles({
-                                                // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                                strokeLinecap: 'butt',
-
-                                                // Text size
-                                                textSize: '22px',
-
-                                                // Colors
-                                                pathColor: `rgba(0, 230, 210, 1)`,
-                                                textColor: '#938E9E',
-                                                trailColor: '#F8F7F9',
-                                            })}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="addr-main-box">
-                                    <div className="addr-card">
-                                        {/* <h5 class="addr-hdn">Current address</h5> */}
-                                        <h5 className="form-quest">Current address</h5>
-                                        {/* start */}
-                                        <div className="addr-box">
-                                            <div className="addr-hdn-cross">
-                                                <h6 className="addr-cont-hdn">{addressData?.address}</h6>
-                                                <div className="addr-ico" onClick={() => backToAddress()}>
-                                                    <i className="icon-close" />
-                                                </div>
-                                            </div>
-                                            <div className="addr-cont-owner">
-                                                <p className="addr-owner">{addressData?.residentialStatus}</p>
-                                                <a href="#!" className="comm-link" onClick={() => backToAddress()}>Change</a>
-                                            </div>
-                                        </div>
-                                        {/* end */}
-                                    </div>
-                                </div>
-                                {/* [disabled] */}
-                                <button className="button button--block" onClick={() => residencyDataFun()}>Continue</button>
-                            </div>
-                            {/* end */}
+                        <div
+                          className="addr-ico"
+                          onClick={() => backToAddress()}
+                        >
+                          <i className="icon-close" />
                         </div>
+                      </div>
+                      <div className="addr-cont-owner">
+                        <p className="addr-owner">
+                          {addressData?.residentialStatus}
+                        </p>
+                        <div className="comm-link" onClick={() => backToAddress()} > Change </div>
+                      </div>
                     </div>
                     {/* end */}
+                  </div>
                 </div>
-            </div>
-            {/* Main Container Ends */}
+                {/* [disabled] */}
+                <button className="button button--block" onClick={() => residencyDataFun()} > Continue </button>
+              </div>
+              {/* end */}
+            </motion.div>
+          </div>
+          {/* end */}
         </div>
+      </div>
+      {/* Main Container Ends */}
+    </div>
+  );
+};
 
-    )
-}
-
-export default WelcomeStep2In1
+export default WelcomeStep2In1;

@@ -1,6 +1,12 @@
 import React, { useRef } from 'react'
+
+/* plugin */
 import { Player } from '@lottiefiles/react-lottie-player';
+/* plugin end */
+
+/* component */
 import animationData from '../assests/json/loader_1.json';
+/* component end */
 
 
 
@@ -32,7 +38,6 @@ const Loader = () => {
 
 
             </div>
-            {/* <img src={`${REACT_APP_PUBLIC_URL}/img/auth-img1.svg`} alt="" /> */}
         </div>
     )
 }
