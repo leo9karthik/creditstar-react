@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/creditstar-react/static/css/main.08fb97be.css",
+    "main.js": "/creditstar-react/static/js/main.aa6574f2.js",
+    "static/js/787.98e5faa9.chunk.js": "/creditstar-react/static/js/787.98e5faa9.chunk.js",
+    "static/media/icomoon.svg?49ijdt": "/creditstar-react/static/media/icomoon.a3d42f08527cf34de20c.svg",
+    "static/media/icomoon.eot?49ijdt": "/creditstar-react/static/media/icomoon.9c3d83c94fcdf34f6a24.eot",
+    "static/media/icomoon.woff?49ijdt": "/creditstar-react/static/media/icomoon.a7216aec32cd646bafd0.woff",
+    "static/media/icomoon.ttf?49ijdt": "/creditstar-react/static/media/icomoon.5761ce2474009f64cb11.ttf",
+    "index.html": "/creditstar-react/index.html",
+    "static/media/handle-drag.svg": "/creditstar-react/static/media/handle-drag.fe37e374f0c25912e0e9.svg",
+    "static/media/drop-down-arrow.svg": "/creditstar-react/static/media/drop-down-arrow.b11c16f5720c819e1610.svg",
+    "static/media/menu-drop.svg": "/creditstar-react/static/media/menu-drop.f3967797be361d4e2541.svg",
+    "main.08fb97be.css.map": "/creditstar-react/static/css/main.08fb97be.css.map",
+    "main.aa6574f2.js.map": "/creditstar-react/static/js/main.aa6574f2.js.map",
+    "787.98e5faa9.chunk.js.map": "/creditstar-react/static/js/787.98e5faa9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.08fb97be.css",
+    "static/js/main.aa6574f2.js"
+  ]
+}
